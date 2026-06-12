@@ -220,6 +220,7 @@ code{background:rgba(11,7,16,.7);padding:2px 7px;border-radius:6px;font-size:13p
 
 <script>
 const SUPA_API = 'https://ndrhiikczkbosentclnh.supabase.co/functions/v1/app/api';
+const absApi = p => (API.startsWith('http') ? API : location.origin + API) + p;
 const BASE = location.pathname.replace(/\/admin(\.html)?\/?$/,'');
 const API = new URLSearchParams(location.search).get('api')
   || (location.hostname.endsWith('.supabase.co') ? (BASE + '/api') : SUPA_API);
@@ -246,7 +247,7 @@ async function login(){
     sessionStorage.setItem('hotamnami_pin',PIN);
     $('#loginPanel').classList.add('hidden'); $('#app').classList.remove('hidden');
     $('#appUrl').textContent=location.origin+BASE;
-    $('#exportUrl').textContent=location.origin+API+'/export?pin='+PIN;
+    $('#exportUrl').textContent=absApi('/export?pin='+PIN);
     setInterval(()=>refresh().catch(()=>{}),12000);
   }catch(e){ toast('קוד שגוי או שגיאת חיבור'); }
 }
@@ -401,7 +402,7 @@ $('#wipeBtn').onclick=async()=>{
 $('#pinBtn').onclick=async()=>{
   const np=$('#newPin').value.trim(); if(np.length<4) return toast('קוד של 4 תווים לפחות');
   await api('/admin/state',{new_pin:np}); PIN=np; sessionStorage.setItem('hotamnami_pin',np);
-  $('#exportUrl').textContent=location.origin+API+'/export?pin='+np;
+  $('#exportUrl').textContent=absApi('/export?pin='+np);
   toast('הקוד הוחלף'); $('#newPin').value='';
 };
 </script>
