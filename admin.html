@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b0710">
+<title>חוֹתָמְנָמִי · פאנל ניהול</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0710;--gold:#d4af37;--gold-l:#f5d67b;--pink:#ff4d9d;--pink-l:#ff8fc6;
+  --white:#fff8f0;--muted:#bba9c9;--card:#1a0f22;--edge:rgba(245,214,123,.3);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Heebo',sans-serif;background:
+  radial-gradient(800px 400px at 90% -5%, rgba(255,77,157,.12), transparent 60%),
+  radial-gradient(600px 400px at 5% 105%, rgba(212,175,55,.1), transparent 60%), var(--bg);
+  color:var(--white);min-height:100vh;padding:20px 16px 80px}
+.display{font-family:'Secular One'}
+.wrap{max-width:760px;margin:0 auto}
+h1.display{font-size:28px;background:linear-gradient(95deg,var(--gold-l),var(--pink-l));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);font-size:14px;margin-bottom:22px}
+.panel{background:rgba(26,15,34,.85);border:1px solid var(--edge);border-radius:var(--r);
+  padding:20px;margin-bottom:16px}
+.btn{font:inherit;font-weight:800;font-size:16px;border:none;border-radius:999px;cursor:pointer;
+  padding:12px 24px;color:#2a1606;background:linear-gradient(95deg,var(--gold-l),var(--gold));
+  box-shadow:0 6px 18px rgba(212,175,55,.35)}
+.btn.pink{color:#fff;background:linear-gradient(95deg,var(--pink-l),var(--pink));box-shadow:0 6px 18px rgba(255,77,157,.4)}
+.btn.sm{font-size:13px;padding:7px 14px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--gold-l);border:1px solid var(--edge);box-shadow:none}
+.btn.danger{background:transparent;color:#ff7b7b;border:1px solid rgba(255,123,123,.4);box-shadow:none}
+.btn:disabled{opacity:.4;pointer-events:none}
+input,select,textarea{font:inherit;font-size:15px;color:var(--white);width:100%;
+  background:rgba(11,7,16,.7);border:1.5px solid rgba(187,169,201,.25);border-radius:12px;
+  padding:11px 13px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--pink)}
+label{display:block;font-size:13px;color:var(--gold-l);font-weight:600;margin:12px 0 5px}
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab{font:inherit;font-size:14px;font-weight:600;color:var(--muted);background:transparent;
+  border:1px solid rgba(187,169,201,.25);border-radius:999px;padding:9px 18px;cursor:pointer}
+.tab.on{color:#2a1606;background:linear-gradient(95deg,var(--gold-l),var(--gold));border-color:transparent;font-weight:800}
+.q-item{display:flex;gap:10px;align-items:flex-start;padding:14px 0;border-bottom:1px solid rgba(187,169,201,.14)}
+.q-item:last-child{border-bottom:none}
+.q-pos{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:14px;color:#2a1606;background:linear-gradient(135deg,var(--gold-l),var(--gold))}
+.q-main{flex:1;min-width:0}
+.q-text{font-weight:600;font-size:15px;line-height:1.45}
+.q-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.chip{display:inline-block;font-size:11px;padding:2px 9px;border-radius:99px;margin-inline-start:6px;
+  background:rgba(255,77,157,.15);color:var(--pink-l);border:1px solid rgba(255,77,157,.3)}
+.chip.work{background:rgba(212,175,55,.14);color:var(--gold-l);border-color:var(--edge)}
+.chip.off{background:rgba(187,169,201,.12);color:var(--muted);border-color:rgba(187,169,201,.3)}
+.q-acts{display:flex;flex-direction:column;gap:5px}
+.icon-btn{font:inherit;width:30px;height:30px;border-radius:9px;cursor:pointer;color:var(--white);
+  background:rgba(255,255,255,.07);border:1px solid rgba(187,169,201,.25);font-size:14px}
+.warn{background:rgba(255,77,157,.12);border:1px solid rgba(255,77,157,.45);border-radius:12px;
+  padding:12px 16px;font-size:14px;margin-bottom:14px;color:var(--pink-l)}
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.stat{flex:1;min-width:120px;text-align:center;background:rgba(11,7,16,.5);border:1px solid var(--edge);
+  border-radius:var(--r);padding:16px}
+.stat b{display:block;font-size:34px;font-family:'Secular One';
+  background:linear-gradient(95deg,var(--gold-l),var(--pink-l));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat span{font-size:13px;color:var(--muted)}
+.p-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(187,169,201,.12)}
+.p-ava{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;
+  border:2px solid var(--edge);background:#241430;display:flex;align-items:center;justify-content:center;font-size:20px}
+.p-name{font-weight:600;font-size:15px}
+.p-sub{font-size:12px;color:var(--muted);direction:ltr;text-align:right}
+.p-done{margin-inline-start:auto;font-size:12px;font-weight:700}
+.opt-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.modal-bg{position:fixed;inset:0;background:rgba(5,2,8,.8);backdrop-filter:blur(6px);z-index:40;
+  display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:30px 16px}
+.modal-bg.on{display:flex}
+.modal{width:100%;max-width:480px;background:var(--card);border:1px solid var(--edge);
+  border-radius:20px;padding:24px}
+.row{display:flex;gap:10px;align-items:center}
+.toast{position:fixed;bottom:24px;right:50%;transform:translateX(50%);background:rgba(26,15,34,.97);
+  border:1px solid var(--edge);padding:12px 22px;border-radius:999px;font-size:14px;z-index:99;
+  opacity:0;transition:opacity .3s}
+.toast.on{opacity:1}
+.hidden{display:none!important}
+code{background:rgba(11,7,16,.7);padding:2px 7px;border-radius:6px;font-size:13px;color:var(--gold-l);direction:ltr;display:inline-block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="display">חוֹתָמְנָמִי 🪩 פאנל ניהול</h1>
+  <p class="sub">חיבורים ממבט ראשון · ניהול שאלות, נרשמים והגדרות הערב</p>
+
+  <!-- כניסה -->
+  <div class="panel" id="loginPanel">
+    <label for="pin">קוד מנחים</label>
+    <div class="row">
+      <input id="pin" type="password" inputmode="numeric" placeholder="••••" style="max-width:160px;direction:ltr;text-align:center">
+      <button class="btn" id="loginBtn">כניסה</button>
+    </div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="tabs">
+      <button class="tab on" data-t="questions">📋 שאלות</button>
+      <button class="tab" data-t="people">💃 נרשמים</button>
+      <button class="tab" data-t="event">🎬 הערב</button>
+      <button class="tab" data-t="settings">⚙️ הגדרות</button>
+    </div>
+
+    <!-- שאלות -->
+    <div id="t-questions">
+      <div class="warn hidden" id="tenWarn">⚠️ הגעתם ל-10 שאלות, היעד שהוגדר לערב. אפשר להוסיף עוד, רק שימו לב שכל שאלה מאריכה את המילוי.</div>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between;margin-bottom:6px">
+          <b id="qTotal"></b>
+          <button class="btn pink sm" id="addQBtn">+ שאלה חדשה</button>
+        </div>
+        <div id="qList"></div>
+      </div>
+    </div>
+
+    <!-- נרשמים -->
+    <div id="t-people" class="hidden">
+      <div class="stat-row">
+        <div class="stat"><b id="stTotal">0</b><span>נרשמו</span></div>
+        <div class="stat"><b id="stDone">0</b><span>סיימו את השאלון</span></div>
+        <div class="stat"><b id="stPct">0%</b><span>השלמה</span></div>
+      </div>
+      <div class="panel"><div id="pList"></div></div>
+    </div>
+
+    <!-- הגדרות -->
+    <div id="t-event" class="hidden">
+      <div class="panel">
+        <b>מצב נוכחי</b>
+        <div class="stat-row" style="margin-top:12px">
+          <div class="stat"><b id="evPhase">·</b><span>שלב</span></div>
+          <div class="stat"><b id="evRound">·</b><span>סיבוב חשוף</span></div>
+          <div class="stat"><b id="evMatched">·</b><span>משודכים</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <b>1 · נעילת השאלון</b>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 12px">סוגרים את ההרשמה לפני חישוב השידוכים. אפשר לפתוח שוב.</p>
+        <div class="row">
+          <button class="btn ghost sm" id="lockBtn">🔒 נעילה</button>
+          <button class="btn ghost sm" id="unlockBtn">🔓 פתיחה מחדש</button>
+        </div>
+      </div>
+      <div class="panel">
+        <b>2 · חישוב השידוכים</b>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 12px">מחשב את שלושת הסיבובים לכל הנרשמים. הרצה חוזרת מוחקת ומחשבת מחדש (למשל אם נוסף נרשם מאוחר).</p>
+        <button class="btn pink" id="computeBtn">🧮 חישוב השידוכים</button>
+        <p id="computeResult" style="font-size:13px;color:var(--gold-l);margin-top:10px"></p>
+      </div>
+      <div class="panel">
+        <b>3 · חשיפת הסיבובים</b>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 12px">בלחיצה, אצל כל המשתתפים תופיע ספירה לאחור של 5 שניות ואז הסולמייט של הסיבוב. אפשר לערוך את המשימה לפני החשיפה.</p>
+        <div id="roundsList"></div>
+        <button class="btn ghost sm" id="hideBtn" style="margin-top:10px">⏸️ החזרת כולם למסך המתנה</button>
+      </div>
+    </div>
+
+    <div id="t-settings" class="hidden">
+      <div class="panel">
+        <b>קישור למשתתפים</b>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 10px">זה הקישור שמפיצים כ-QR בכניסה לאירוע:</p>
+        <code id="appUrl"></code>
+        <div style="margin-top:10px"><button class="btn ghost sm" id="copyUrl">העתקת קישור</button></div>
+      </div>
+      <div class="panel">
+        <b>סנכרון לגוגל שיטס</b>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 10px">
+          כתובת הייצוא לסקריפט שבגיליון (ההוראות בקובץ ההתקנה):</p>
+        <code id="exportUrl"></code>
+      </div>
+      <div class="panel" style="border-color:rgba(255,123,123,.45)">
+        <b style="color:#ff7b7b">איפוס מלא</b>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 12px">מוחק את כל הנרשמים, התשובות והשידוכים. השאלות נשארות. למשל לפני האירוע האמיתי, אחרי הרצת ניסוי.</p>
+        <button class="btn danger sm" id="wipeBtn">🧨 מחיקת כל הנרשמים</button>
+      </div>
+      <div class="panel">
+        <b>החלפת קוד מנחים</b>
+        <div class="row" style="margin-top:10px">
+          <input id="newPin" type="text" placeholder="קוד חדש" style="max-width:160px;direction:ltr;text-align:center">
+          <button class="btn ghost sm" id="pinBtn">עדכון</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- מודאל שאלה -->
+<div class="modal-bg" id="qModalBg">
+  <div class="modal">
+    <h3 class="display" id="qModalTitle" style="margin-bottom:6px">שאלה חדשה</h3>
+    <label>סוג השאלה</label>
+    <select id="mType">
+      <option value="yes_no">כן / לא (החלקה)</option>
+      <option value="choice">בחירה אחת מתוך 2–4</option>
+      <option value="open">שאלה פתוחה</option>
+    </select>
+    <label>נוסח השאלה</label>
+    <textarea id="mText" rows="2" placeholder="למשל: פגישה שיכלה להיות מייל?"></textarea>
+    <div id="mOptsWrap" class="hidden">
+      <label>אפשרויות (2–4)</label>
+      <div id="mOpts"></div>
+      <button class="btn ghost sm" id="addOptBtn" type="button">+ אפשרות</button>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:16px;cursor:pointer">
+      <input type="checkbox" id="mWork" style="width:18px;height:18px"> 💼 שאלת "עבודה" (נכללת בסיבוב "הכי קרוב בעבודה")
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="mActive" checked style="width:18px;height:18px"> פעילה (מוצגת למשתתפים)
+    </label>
+    <div class="row" style="margin-top:20px;justify-content:flex-end">
+      <button class="btn ghost sm" id="mCancel">ביטול</button>
+      <button class="btn pink" id="mSave">שמירה ✨</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_API = 'https://ndrhiikczkbosentclnh.supabase.co/functions/v1/app/api';
+const BASE = location.pathname.replace(/\/admin(\.html)?\/?$/,'');
+const API = new URLSearchParams(location.search).get('api')
+  || (location.hostname.endsWith('.supabase.co') ? (BASE + '/api') : SUPA_API);
+const $=s=>document.querySelector(s);
+let PIN=sessionStorage.getItem('hotamnami_pin')||'', DATA=null, editingId=null;
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600);}
+async function api(path,body){
+  const res=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({...body,pin:PIN})});
+  const j=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(j.error||'שגיאה');
+  return j;
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---- כניסה ---- */
+$('#loginBtn').onclick=login;
+$('#pin').addEventListener('keydown',e=>e.key==='Enter'&&login());
+async function login(){
+  PIN=$('#pin').value.trim()||PIN;
+  try{ await refresh();
+    sessionStorage.setItem('hotamnami_pin',PIN);
+    $('#loginPanel').classList.add('hidden'); $('#app').classList.remove('hidden');
+    $('#appUrl').textContent=location.origin+BASE;
+    $('#exportUrl').textContent=location.origin+API+'/export?pin='+PIN;
+    setInterval(()=>refresh().catch(()=>{}),12000);
+  }catch(e){ toast('קוד שגוי או שגיאת חיבור'); }
+}
+if(PIN){ $('#pin').value=PIN; login(); }
+
+/* ---- טאבים ---- */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+  ['questions','people','event','settings'].forEach(n=>$('#t-'+n).classList.toggle('hidden',n!==t.dataset.t));
+});
+
+/* ---- נתונים ---- */
+async function refresh(){
+  DATA=await api('/admin/data',{});
+  renderQ(); renderP(); renderEvent();
+}
+
+/* ---- לשונית הערב ---- */
+const PHASE_NAMES={registration:'הרשמה פתוחה',locked:'שאלון נעול',reveal:'חשיפה'};
+function renderEvent(){
+  const st=DATA.state||{}, ms=DATA.match_stats||{};
+  $('#evPhase').textContent=PHASE_NAMES[st.phase]||st.phase;
+  $('#evRound').textContent=st.current_round>0?st.current_round:'אין';
+  const matched=ms[1]?ms[1].people:0;
+  $('#evMatched').textContent=matched||'·';
+  $('#roundsList').innerHTML=(DATA.rounds||[]).map(r=>{
+    const stat=ms[r.round_no];
+    const live=st.current_round===r.round_no;
+    return `<div class="q-item" style="flex-direction:column;align-items:stretch;gap:8px">
+      <div class="row" style="justify-content:space-between">
+        <b>${r.round_no} · ${esc(r.title)} ${stat&&stat.triple?'<span class="chip">כולל שלשה</span>':''}</b>
+        <button class="btn ${live?'sm':'pink sm'}" onclick="revealRound(${r.round_no})" ${stat?'':'disabled'}>
+          ${live?'🔁 חשיפה שוב':'🎬 חשיפה'}</button>
+      </div>
+      <input value="${esc(r.title)}" id="rt-${r.round_no}" placeholder="כותרת הסיבוב">
+      <textarea id="rm-${r.round_no}" rows="2" placeholder="המשימה של הזוג">${esc(r.mission)}</textarea>
+      <button class="btn ghost sm" onclick="saveRound(${r.round_no})" style="align-self:flex-start">שמירת נוסח</button>
+    </div>`;
+  }).join('');
+}
+$('#lockBtn').onclick=async()=>{ await api('/admin/state',{phase:'locked'}); toast('השאלון ננעל 🔒'); refresh(); };
+$('#unlockBtn').onclick=async()=>{ await api('/admin/state',{phase:'registration'}); toast('ההרשמה נפתחה שוב'); refresh(); };
+$('#hideBtn').onclick=async()=>{ await api('/admin/state',{current_round:0}); toast('כולם חזרו למסך ההמתנה'); refresh(); };
+$('#computeBtn').onclick=async()=>{
+  const btn=$('#computeBtn'); btn.disabled=true; btn.textContent='מחשבים... 🧮';
+  try{
+    const r=await api('/admin/compute',{});
+    $('#computeResult').textContent='שודכו '+r.total+' משתתפים · '+
+      r.summary.map(s=>'סיבוב '+s.round_no+': '+s.pairs+' זוגות'+(s.triple?' (כולל שלשה)':'')+', התאמה ממוצעת '+s.avg+'%').join(' · ');
+    toast('השידוכים מוכנים ✨');
+  }catch(e){ toast(e.message); }
+  btn.disabled=false; btn.textContent='🧮 חישוב השידוכים'; refresh();
+};
+window.revealRound=async n=>{
+  if(!confirm('לחשוף את סיבוב '+n+'? אצל כולם תתחיל ספירה לאחור של 5 שניות.'))return;
+  await api('/admin/state',{phase:'reveal',current_round:n});
+  toast('סיבוב '+n+' נחשף! 🎬'); refresh();
+};
+window.saveRound=async n=>{
+  await api('/admin/rounds',{rounds:[{round_no:n,title:$('#rt-'+n).value.trim(),mission:$('#rm-'+n).value.trim()}]});
+  toast('הנוסח נשמר'); refresh();
+};
+function renderQ(){
+  const qs=DATA.questions;
+  $('#qTotal').textContent='סה"כ '+qs.length+' שאלות ('+qs.filter(q=>q.is_active).length+' פעילות)';
+  $('#tenWarn').classList.toggle('hidden', qs.filter(q=>q.is_active).length<10);
+  const tn={yes_no:'כן/לא',choice:'בחירה',open:'פתוחה'};
+  $('#qList').innerHTML=qs.map((q,i)=>`
+    <div class="q-item">
+      <div class="q-pos">${i+1}</div>
+      <div class="q-main">
+        <div class="q-text">${esc(q.text)}
+          <span class="chip">${tn[q.qtype]}</span>
+          ${q.topic==='work'?'<span class="chip work">💼 עבודה</span>':''}
+          ${q.is_active?'':'<span class="chip off">כבויה</span>'}
+        </div>
+        <div class="q-meta">${q.qtype==='choice'?esc((q.options||[]).join(' · ')):''}</div>
+      </div>
+      <div class="q-acts">
+        <div class="row" style="gap:5px">
+          <button class="icon-btn" onclick="moveQ('${q.id}',-1)" ${i===0?'disabled':''}>↑</button>
+          <button class="icon-btn" onclick="moveQ('${q.id}',1)" ${i===qs.length-1?'disabled':''}>↓</button>
+        </div>
+        <div class="row" style="gap:5px">
+          <button class="icon-btn" onclick="editQ('${q.id}')">✏️</button>
+          <button class="icon-btn" onclick="delQ('${q.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function renderP(){
+  const ps=DATA.participants, total=DATA.questions.filter(q=>q.is_active).length;
+  const done=ps.filter(p=>p.answer_count>=total).length;
+  $('#stTotal').textContent=ps.length; $('#stDone').textContent=done;
+  $('#stPct').textContent=(ps.length?Math.round(done/ps.length*100):0)+'%';
+  $('#pList').innerHTML=ps.map(p=>`
+    <div class="p-item">
+      ${p.avatar_url?`<img class="p-ava" src="${esc(p.avatar_url)}">`:'<div class="p-ava">🪩</div>'}
+      <div><div class="p-name">${esc(p.full_name)}</div>
+      <div class="p-sub">${esc(p.email)} · ${esc(p.phone)}</div></div>
+      <div class="p-done" style="color:${p.answer_count>=total?'#5dffa8':'var(--pink-l)'}">
+        ${p.answer_count}/${total}</div>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:14px">עדיין אין נרשמים. ברגע שמישהו ימלא, הוא יופיע כאן.</p>';
+}
+
+/* ---- מודאל שאלה ---- */
+$('#addQBtn').onclick=()=>openModal();
+$('#mCancel').onclick=()=>$('#qModalBg').classList.remove('on');
+$('#mType').onchange=()=>{$('#mOptsWrap').classList.toggle('hidden',$('#mType').value!=='choice');
+  if($('#mType').value==='choice'&&!$('#mOpts').children.length){addOpt();addOpt();}};
+$('#addOptBtn').onclick=()=>{ if($('#mOpts').children.length>=4) return toast('עד 4 אפשרויות'); addOpt(); };
+function addOpt(v=''){const d=document.createElement('div');d.className='opt-row';
+  d.innerHTML=`<input value="${esc(v)}" placeholder="אפשרות"><button class="icon-btn" type="button">✕</button>`;
+  d.querySelector('button').onclick=()=>{if($('#mOpts').children.length>2)d.remove();else toast('לפחות 2 אפשרויות');};
+  $('#mOpts').appendChild(d);}
+function openModal(q){
+  editingId=q?q.id:null;
+  $('#qModalTitle').textContent=q?'עריכת שאלה':'שאלה חדשה';
+  $('#mType').value=q?q.qtype:'yes_no'; $('#mText').value=q?q.text:'';
+  $('#mWork').checked=q?q.topic==='work':false; $('#mActive').checked=q?q.is_active:true;
+  $('#mOpts').innerHTML='';
+  if(q&&q.qtype==='choice')(q.options||[]).forEach(o=>addOpt(o));
+  $('#mType').onchange();
+  $('#qModalBg').classList.add('on');
+}
+window.editQ=id=>openModal(DATA.questions.find(q=>q.id===id));
+window.delQ=async id=>{ if(!confirm('למחוק את השאלה? התשובות שנאספו עליה יימחקו גם.'))return;
+  await api('/admin/question',{action:'delete',id}); toast('נמחקה'); refresh(); };
+window.moveQ=async(id,dir)=>{ await api('/admin/question',{action:'move',id,dir}); refresh(); };
+$('#mSave').onclick=async()=>{
+  const qtype=$('#mType').value, text=$('#mText').value.trim();
+  if(text.length<2) return toast('חסר נוסח שאלה');
+  let options=[];
+  if(qtype==='choice'){
+    options=[...$('#mOpts').querySelectorAll('input')].map(i=>i.value.trim()).filter(Boolean);
+    if(options.length<2) return toast('שאלת בחירה צריכה לפחות 2 אפשרויות');
+  }
+  await api('/admin/question',{action:editingId?'update':'create', id:editingId,
+    q:{qtype,text,options,topic:$('#mWork').checked?'work':'general',is_active:$('#mActive').checked}});
+  $('#qModalBg').classList.remove('on'); toast('נשמר ✨'); refresh();
+};
+
+/* ---- הגדרות ---- */
+$('#copyUrl').onclick=()=>{navigator.clipboard.writeText(location.origin+BASE);toast('הקישור הועתק');};
+$('#wipeBtn').onclick=async()=>{
+  if(!confirm('למחוק את כל הנרשמים, התשובות והשידוכים? אין דרך חזרה.'))return;
+  const word=prompt('להשלמת המחיקה, הקלידו: איפוס');
+  if(word!=='איפוס') return toast('המחיקה בוטלה');
+  await api('/admin/wipe',{});
+  toast('המערכת אופסה 🧨'); refresh();
+};
+$('#pinBtn').onclick=async()=>{
+  const np=$('#newPin').value.trim(); if(np.length<4) return toast('קוד של 4 תווים לפחות');
+  await api('/admin/state',{new_pin:np}); PIN=np; sessionStorage.setItem('hotamnami_pin',np);
+  $('#exportUrl').textContent=location.origin+API+'/export?pin='+np;
+  toast('הקוד הוחלף'); $('#newPin').value='';
+};
+</script>
+</body>
+</html>

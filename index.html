@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0710">
+<title>חוֹתָמְנָמִי · חיבורים ממבט ראשון</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0710; --bg2:#160d1c;
+  --gold:#d4af37; --gold-l:#f5d67b; --gold-d:#9a7b1e;
+  --pink:#ff4d9d; --pink-l:#ff8fc6; --pink-glow:rgba(255,77,157,.55);
+  --white:#fff8f0; --muted:#bba9c9;
+  --card:#1a0f22; --card-edge:rgba(245,214,123,.35);
+  --r-lg:26px; --r-md:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Heebo',sans-serif;background:var(--bg);color:var(--white);
+  overflow:hidden;position:fixed;inset:0;width:100%;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(255,77,157,.16), transparent 60%),
+    radial-gradient(700px 450px at 10% 110%, rgba(212,175,55,.14), transparent 60%),
+    linear-gradient(160deg, var(--bg) 30%, var(--bg2) 100%);
+}
+.display{font-family:'Secular One',sans-serif}
+
+/* ====== נצנצים מרחפים ====== */
+#sparkles{position:fixed;inset:0;pointer-events:none;z-index:1}
+.sp{position:absolute;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,var(--gold-l) 40%,transparent 75%);
+  animation:floatUp linear infinite;opacity:0}
+.sp.pink{background:radial-gradient(circle,#fff 0%,var(--pink-l) 40%,transparent 75%)}
+@keyframes floatUp{
+  0%{transform:translateY(15vh) scale(.4);opacity:0}
+  12%{opacity:.95} 70%{opacity:.7}
+  100%{transform:translateY(-110vh) scale(1.15);opacity:0}
+}
+
+/* ====== מסכים ====== */
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+  padding:max(20px,env(safe-area-inset-top)) 22px max(20px,env(safe-area-inset-bottom));
+  z-index:2;opacity:0;pointer-events:none;transform:translateY(26px);
+  transition:opacity .5s ease,transform .5s cubic-bezier(.2,.9,.3,1.2);overflow-y:auto}
+.screen.on{opacity:1;pointer-events:auto;transform:translateY(0)}
+
+/* ====== לוגו ====== */
+.logo-wrap{text-align:center;margin-top:8vh}
+.logo{font-size:clamp(44px,13vw,72px);line-height:1.1;
+  background:linear-gradient(100deg,var(--gold-l) 15%,#fff 38%,var(--gold) 55%,var(--pink-l) 85%);
+  background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:shimmer 4.5s ease-in-out infinite;filter:drop-shadow(0 0 26px rgba(245,214,123,.35))}
+@keyframes shimmer{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+.tagline{color:var(--muted);font-size:18px;letter-spacing:.06em;margin-top:10px}
+.heart-badge{font-size:54px;margin-bottom:6px;display:inline-block;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14);filter:drop-shadow(0 0 18px var(--pink-glow))}}
+
+/* ====== כפתורים ====== */
+.btn{border:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:19px;
+  border-radius:999px;padding:17px 30px;width:100%;max-width:340px;color:#2a1606;
+  background:linear-gradient(95deg,var(--gold-l),var(--gold) 55%,var(--gold-l));
+  background-size:200% 100%;
+  box-shadow:0 8px 28px rgba(212,175,55,.4),inset 0 1px 0 rgba(255,255,255,.6);
+  transition:transform .15s,box-shadow .25s,background-position .4s}
+.btn:active{transform:scale(.96)}
+.btn.pink{color:#fff;background:linear-gradient(95deg,var(--pink-l),var(--pink) 55%,var(--pink-l));
+  background-size:200% 100%;box-shadow:0 8px 28px var(--pink-glow),inset 0 1px 0 rgba(255,255,255,.4)}
+.btn.ghost{background:transparent;color:var(--gold-l);box-shadow:none;
+  border:1.5px solid var(--card-edge);font-weight:600}
+.btn:disabled{opacity:.45;pointer-events:none}
+
+/* ====== טופס רישום ====== */
+.form-card{width:100%;max-width:420px;background:rgba(26,15,34,.82);backdrop-filter:blur(14px);
+  border:1px solid var(--card-edge);border-radius:var(--r-lg);padding:26px 22px;margin-top:18px;
+  box-shadow:0 18px 50px rgba(0,0,0,.55)}
+.fld{margin-bottom:16px}
+.fld label{display:block;font-size:14px;color:var(--gold-l);margin-bottom:7px;font-weight:600}
+.fld input{width:100%;padding:14px 16px;border-radius:var(--r-md);font:inherit;font-size:17px;
+  color:var(--white);background:rgba(11,7,16,.7);border:1.5px solid rgba(187,169,201,.25);
+  transition:border-color .2s,box-shadow .2s;outline:none}
+.fld input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,77,157,.18)}
+.fld .err{color:var(--pink-l);font-size:13px;margin-top:5px;min-height:18px}
+
+/* אווטר */
+.ava-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ava-preview{width:84px;height:84px;border-radius:50%;flex-shrink:0;overflow:hidden;
+  border:3px solid transparent;
+  background:linear-gradient(var(--card),var(--card)) padding-box,
+             linear-gradient(135deg,var(--gold-l),var(--pink)) border-box;
+  display:flex;align-items:center;justify-content:center;font-size:38px}
+.ava-preview img{width:100%;height:100%;object-fit:cover}
+.ava-btns{display:flex;flex-direction:column;gap:8px;flex:1;min-width:150px}
+.ava-btn{font:inherit;font-size:14px;font-weight:600;color:var(--white);cursor:pointer;
+  background:rgba(255,255,255,.07);border:1px solid rgba(187,169,201,.3);
+  border-radius:999px;padding:9px 14px;transition:background .2s}
+.ava-btn:active{background:rgba(255,77,157,.25)}
+.preset-grid{display:none;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.preset-grid.open{display:grid}
+.preset{aspect-ratio:1;border-radius:50%;font-size:30px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s}
+.preset:active{transform:scale(.9)}
+.preset.sel{border-color:var(--gold-l);box-shadow:0 0 14px rgba(245,214,123,.5)}
+
+/* ====== מסך שאלון ====== */
+#quiz{padding-top:max(14px,env(safe-area-inset-top))}
+.quiz-top{width:100%;max-width:420px;display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.back-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--card-edge);
+  background:rgba(26,15,34,.8);color:var(--gold-l);font-size:20px;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:opacity .2s}
+.back-btn:disabled{opacity:.25}
+.progress{flex:1;height:10px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.progress>div{height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--gold),var(--pink));
+  box-shadow:0 0 12px var(--pink-glow);transition:width .45s cubic-bezier(.3,1.2,.4,1)}
+.q-count{font-size:14px;color:var(--muted);min-width:44px;text-align:left}
+
+/* ערימת קלפים */
+.stack{position:relative;width:100%;max-width:400px;flex:1;min-height:340px;margin:14px 0 6px;perspective:1100px}
+.card{position:absolute;inset:0;border-radius:var(--r-lg);padding:30px 24px;
+  background:linear-gradient(165deg,#221329 0%,var(--card) 55%,#150a1e 100%);
+  border:1.5px solid var(--card-edge);
+  box-shadow:0 22px 55px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);
+  display:flex;flex-direction:column;touch-action:none;user-select:none;-webkit-user-select:none;
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.15),opacity .3s}
+.card.under1{transform:translateY(16px) scale(.95);opacity:.65;pointer-events:none}
+.card.under2{transform:translateY(30px) scale(.9);opacity:.3;pointer-events:none}
+.card.dragging{transition:none}
+.card.fly-left{transform:translateX(-130vw) rotate(-24deg)!important;opacity:0;transition:transform .5s ease-in,opacity .5s}
+.card.fly-right{transform:translateX(130vw) rotate(24deg)!important;opacity:0;transition:transform .5s ease-in,opacity .5s}
+.card.deal-in{animation:dealIn .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes dealIn{from{transform:translateY(46px) scale(.88);opacity:0}to{transform:none;opacity:1}}
+.q-topic{font-size:13px;letter-spacing:.12em;color:var(--pink-l);font-weight:600;margin-bottom:12px}
+.q-text{font-size:clamp(23px,6.4vw,30px);font-weight:800;line-height:1.35;flex-shrink:0}
+.q-prev{margin-top:12px;font-size:14px;color:var(--gold-l);background:rgba(212,175,55,.1);
+  border:1px dashed var(--card-edge);border-radius:12px;padding:8px 12px;display:none}
+.q-body{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:11px;margin-top:18px}
+
+/* חותמות כן/לא */
+.stamp{position:absolute;top:26px;font-size:34px;font-weight:800;padding:6px 20px;border-radius:14px;
+  border:4px solid;transform:rotate(12deg);opacity:0;pointer-events:none;font-family:'Secular One'}
+.stamp.yes{right:18px;color:#5dffa8;border-color:#5dffa8;transform:rotate(-12deg)}
+.stamp.no{left:18px;color:var(--pink);border-color:var(--pink)}
+
+/* כפתורי תשובה */
+.opt{font:inherit;font-size:17px;font-weight:600;color:var(--white);cursor:pointer;text-align:right;
+  background:rgba(255,255,255,.06);border:1.5px solid rgba(187,169,201,.28);
+  border-radius:var(--r-md);padding:15px 18px;width:100%;
+  transition:transform .12s,border-color .2s,background .2s,box-shadow .2s}
+.opt:active{transform:scale(.97)}
+.opt.sel{border-color:var(--gold-l);background:rgba(212,175,55,.16);
+  box-shadow:0 0 18px rgba(212,175,55,.35)}
+.yn-row{display:flex;gap:14px}
+.yn{flex:1;font:inherit;font-size:18px;font-weight:800;cursor:pointer;border-radius:var(--r-md);
+  padding:16px;border:1.5px solid;transition:transform .12s}
+.yn:active{transform:scale(.94)}
+.yn.no{color:var(--pink-l);border-color:rgba(255,77,157,.5);background:rgba(255,77,157,.1)}
+.yn.yes{color:#5dffa8;border-color:rgba(93,255,168,.45);background:rgba(93,255,168,.08)}
+.swipe-hint{text-align:center;color:var(--muted);font-size:13px;margin-top:4px}
+textarea.open-in{width:100%;min-height:110px;resize:none;font:inherit;font-size:17px;color:var(--white);
+  background:rgba(11,7,16,.7);border:1.5px solid rgba(187,169,201,.25);border-radius:var(--r-md);
+  padding:14px;outline:none}
+textarea.open-in:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,77,157,.18)}
+
+/* ====== מסך סיום ====== */
+.done-ava{width:118px;height:118px;border-radius:50%;overflow:hidden;margin:5vh auto 16px;
+  border:4px solid transparent;font-size:54px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(var(--card),var(--card)) padding-box,
+             linear-gradient(135deg,var(--gold-l),var(--pink)) border-box;
+  box-shadow:0 0 40px rgba(255,77,157,.35);animation:pulse 2.2s ease-in-out infinite}
+.done-ava img{width:100%;height:100%;object-fit:cover}
+.confetti{position:fixed;top:-14px;border-radius:3px;pointer-events:none;z-index:50;
+  animation:cfall linear forwards}
+@keyframes cfall{to{transform:translateY(110vh) rotate(720deg);opacity:.2}}
+
+.note{color:var(--muted);font-size:15px;text-align:center;line-height:1.7;max-width:330px}
+.toast{position:fixed;bottom:max(26px,env(safe-area-inset-bottom));right:50%;transform:translateX(50%) translateY(80px);
+  background:rgba(26,15,34,.95);border:1px solid var(--card-edge);color:var(--white);
+  padding:13px 22px;border-radius:999px;font-size:15px;z-index:99;opacity:0;
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.2),opacity .35s;max-width:88vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(50%) translateY(0)}
+.spinner{width:46px;height:46px;border-radius:50%;margin:30px auto;
+  border:4px solid rgba(245,214,123,.2);border-top-color:var(--gold-l);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ====== המתנה לחשיפה ====== */
+.wait-heart{font-size:74px;animation:pulse 1.6s ease-in-out infinite;margin-top:9vh}
+.wait-ava{width:96px;height:96px;border-radius:50%;overflow:hidden;margin:22px auto 14px;
+  border:3px solid transparent;font-size:44px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(var(--card),var(--card)) padding-box,
+             linear-gradient(135deg,var(--gold-l),var(--pink)) border-box}
+.wait-ava img{width:100%;height:100%;object-fit:cover}
+.dots::after{content:'';animation:dots 1.6s steps(4) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+/* ====== ספירה לאחור ====== */
+#s-count{justify-content:center;background:rgba(5,2,8,.6)}
+.count-label{color:var(--pink-l);font-size:19px;letter-spacing:.14em;font-weight:600;
+  animation:pulse 1s ease-in-out infinite}
+.count-num{font-family:'Secular One';font-size:46vw;max-font-size:240px;line-height:1;
+  background:linear-gradient(160deg,var(--gold-l) 20%,#fff 45%,var(--pink) 80%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 44px rgba(255,77,157,.55))}
+.count-num.tick{animation:countPunch 1s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes countPunch{
+  0%{transform:scale(2.4);opacity:0;filter:blur(14px) drop-shadow(0 0 44px rgba(255,77,157,.55))}
+  28%{transform:scale(1);opacity:1;filter:blur(0) drop-shadow(0 0 44px rgba(255,77,157,.55))}
+  85%{transform:scale(.94);opacity:1}
+  100%{transform:scale(.9);opacity:.55}}
+.count-ring{position:fixed;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.count-ring::before{content:'';width:72vw;height:72vw;max-width:430px;max-height:430px;border-radius:50%;
+  border:2px solid rgba(245,214,123,.35);animation:ringPulse 1s ease-out infinite}
+@keyframes ringPulse{0%{transform:scale(.62);opacity:.9}100%{transform:scale(1.22);opacity:0}}
+
+/* ====== מסך המאצ' ====== */
+#s-match{justify-content:flex-start}
+.rays{position:fixed;top:34vh;right:50%;width:0;height:0;pointer-events:none;z-index:1}
+.ray{position:absolute;bottom:0;right:-3px;width:6px;height:46vh;transform-origin:bottom center;
+  background:linear-gradient(to top,rgba(245,214,123,.5),transparent 75%);
+  animation:rayGrow 1.4s ease-out forwards, raySpin 14s linear infinite}
+@keyframes rayGrow{from{opacity:0;height:0}to{opacity:1;height:46vh}}
+@keyframes raySpin{from{rotate:0deg}to{rotate:360deg}}
+.match-round{margin-top:max(20px,env(safe-area-inset-top));color:var(--pink-l);font-size:15px;
+  letter-spacing:.12em;font-weight:600;border:1px solid rgba(255,77,157,.4);border-radius:999px;
+  padding:7px 18px;background:rgba(255,77,157,.1)}
+.match-reveal{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
+  animation:matchIn 1.1s cubic-bezier(.18,1.1,.3,1.18)}
+@keyframes matchIn{0%{transform:scale(.2) rotate(-9deg);opacity:0;filter:blur(10px)}
+  60%{transform:scale(1.07) rotate(1.5deg);filter:blur(0)}100%{transform:scale(1) rotate(0);opacity:1}}
+.match-avas{display:flex;justify-content:center;margin-top:26px}
+.match-ava{width:158px;height:158px;border-radius:50%;overflow:hidden;font-size:74px;
+  display:flex;align-items:center;justify-content:center;position:relative;
+  border:5px solid transparent;
+  background:linear-gradient(var(--card),var(--card)) padding-box,
+             conic-gradient(var(--gold-l),var(--pink),#fff,var(--gold),var(--gold-l)) border-box;
+  box-shadow:0 0 56px rgba(255,77,157,.5),0 0 110px rgba(212,175,55,.3);
+  animation:avaGlow 2.4s ease-in-out infinite}
+.match-ava img{width:100%;height:100%;object-fit:cover}
+.match-ava.small{width:118px;height:118px;font-size:54px}
+.match-ava+.match-ava{margin-inline-start:-26px}
+@keyframes avaGlow{0%,100%{box-shadow:0 0 56px rgba(255,77,157,.5),0 0 110px rgba(212,175,55,.3)}
+  50%{box-shadow:0 0 76px rgba(255,77,157,.75),0 0 150px rgba(212,175,55,.45)}}
+.match-name{font-family:'Secular One';font-size:clamp(28px,8.6vw,40px);margin-top:18px;text-align:center;
+  background:linear-gradient(100deg,var(--gold-l) 15%,#fff 45%,var(--pink-l) 85%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 18px rgba(245,214,123,.3))}
+.match-pct{font-family:'Secular One';font-size:64px;line-height:1;margin-top:8px;color:var(--pink);
+  text-shadow:0 0 26px var(--pink-glow)}
+.match-pct small{font-size:24px}
+.match-pct-label{color:var(--muted);font-size:14px;margin-top:2px}
+.mission-card{margin-top:22px;width:100%;max-width:380px;background:rgba(26,15,34,.88);
+  border:1.5px dashed var(--card-edge);border-radius:var(--r-lg);padding:18px 20px;text-align:center;
+  animation:dealIn .6s .9s cubic-bezier(.2,.9,.3,1.2) both}
+.mission-card b{color:var(--gold-l);display:block;margin-bottom:6px;font-size:14px;letter-spacing:.1em}
+.mission-card p{font-size:17px;line-height:1.55}
+.find-hint{color:var(--muted);font-size:14px;margin-top:14px;text-align:center;animation:pulse 2.4s infinite}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="sparkles"></div>
+
+<!-- ====== מסך פתיחה ====== -->
+<section class="screen on" id="s-landing">
+  <div class="logo-wrap">
+    <span class="heart-badge">💘</span>
+    <h1 class="logo display">חוֹתָמְנָמִי</h1>
+    <p class="tagline">חיבורים ממבט ראשון</p>
+  </div>
+  <div style="flex:1"></div>
+  <p class="note" style="margin-bottom:18px">עשר שאלות. דקה וחצי.<br>הערב נגלה מי הסולמייט שלך בסמינר.</p>
+  <button class="btn pink" id="startBtn">מתחילים ✨</button>
+  <div style="height:10px"></div>
+  <button class="btn ghost" id="myMatchBtn">כבר נרשמתי, לסולמייט שלי 💘</button>
+  <div style="height:14px"></div>
+</section>
+
+<!-- ====== מסך זיהוי (מכשיר חדש) ====== -->
+<section class="screen" id="s-who">
+  <h2 class="display" style="font-size:28px;margin-top:9vh;background:linear-gradient(95deg,var(--gold-l),var(--pink-l));-webkit-background-clip:text;background-clip:text;color:transparent">רגע, מי זה? 🕵️</h2>
+  <p class="note" style="margin-top:12px">המכשיר הזה לא מזהה אותך.<br>המייל או הטלפון שאיתם נרשמת:</p>
+  <form class="form-card" id="whoForm" novalidate style="max-width:360px">
+    <div class="fld">
+      <input id="whoInput" dir="ltr" placeholder="מייל או טלפון" autocomplete="email">
+      <div class="err" id="eWho"></div>
+    </div>
+    <button class="btn pink" type="submit">זה אני ✋</button>
+  </form>
+  <div style="flex:1"></div>
+  <button class="btn ghost" id="whoBackBtn">חזרה</button>
+  <div style="height:14px"></div>
+</section>
+
+<!-- ====== מסך המתנה לחשיפה ====== -->
+<section class="screen" id="s-wait">
+  <div class="wait-heart">💘</div>
+  <div class="wait-ava" id="waitAva">🪩</div>
+  <h2 class="display" style="font-size:24px;text-align:center">היי <span id="waitName"></span></h2>
+  <p class="note" style="margin-top:12px"><span id="waitMsg">הקסם מתבשל</span><span class="dots"></span></p>
+  <p class="note" style="margin-top:8px;font-size:13px">ברגע שהמנחים יחשפו את הסיבוב,<br>זה יקרה כאן. אל תסגרו את העמוד.</p>
+  <div style="flex:1"></div>
+</section>
+
+<!-- ====== ספירה לאחור ====== -->
+<section class="screen" id="s-count">
+  <div class="count-ring"></div>
+  <div class="count-label" id="countLabel">הסולמייט שלך בעוד</div>
+  <div class="count-num" id="countNum">5</div>
+</section>
+
+<!-- ====== מסך המאצ' ====== -->
+<section class="screen" id="s-match">
+  <div class="rays" id="rays"></div>
+  <div class="match-round" id="matchRound"></div>
+  <div class="match-reveal" id="matchReveal">
+    <div class="match-avas" id="matchAvas"></div>
+    <div class="match-name" id="matchName"></div>
+    <div class="match-pct"><span id="matchPct">0</span><small>%</small></div>
+    <div class="match-pct-label">התאמה ביניכם</div>
+  </div>
+  <div class="mission-card">
+    <b>✦ המשימה שלכם ✦</b>
+    <p id="matchMission"></p>
+  </div>
+  <p class="find-hint">עכשיו צאו למצוא זה את זה באולם 🔦</p>
+  <div style="flex:1"></div>
+</section>
+
+<!-- ====== מסך רישום ====== -->
+<section class="screen" id="s-reg">
+  <h2 class="display" style="font-size:30px;margin-top:10px;background:linear-gradient(95deg,var(--gold-l),var(--pink-l));-webkit-background-clip:text;background-clip:text;color:transparent">נעים להכיר 💫</h2>
+  <form class="form-card" id="regForm" novalidate>
+    <div class="fld">
+      <label>תמונת פרופיל</label>
+      <div class="ava-row">
+        <div class="ava-preview" id="avaPreview">🪩</div>
+        <div class="ava-btns">
+          <button type="button" class="ava-btn" id="camBtn">📸 צילום סלפי</button>
+          <button type="button" class="ava-btn" id="upBtn">🖼️ העלאת תמונה</button>
+          <button type="button" class="ava-btn" id="presetBtn">✨ בחירת אווטר</button>
+        </div>
+      </div>
+      <div class="preset-grid" id="presetGrid"></div>
+      <input type="file" id="camInput" accept="image/*" capture="user" class="hidden">
+      <input type="file" id="upInput" accept="image/*" class="hidden">
+    </div>
+    <div class="fld"><label for="fName">שם מלא</label>
+      <input id="fName" autocomplete="name" placeholder="כמו שיופיע אצל הסולמייט"><div class="err" id="eName"></div></div>
+    <div class="fld"><label for="fEmail">מייל</label>
+      <input id="fEmail" type="email" autocomplete="email" inputmode="email" dir="ltr" placeholder="name@example.com"><div class="err" id="eEmail"></div></div>
+    <div class="fld"><label for="fPhone">טלפון</label>
+      <input id="fPhone" type="tel" autocomplete="tel" inputmode="tel" dir="ltr" placeholder="050-0000000"><div class="err" id="ePhone"></div></div>
+    <button class="btn" type="submit" id="regBtn">לשאלות 💛</button>
+  </form>
+</section>
+
+<!-- ====== מסך "כבר מילאת" ====== -->
+<section class="screen" id="s-again">
+  <div class="done-ava" id="againAva">🪩</div>
+  <h2 class="display" style="font-size:26px;text-align:center">היי <span id="againName"></span>, כבר נפגשנו 😉</h2>
+  <p class="note" style="margin-top:12px">כבר מילאת את השאלון.<br>אפשר לעבור על התשובות ולעדכן אותן, כל תשובה חדשה מחליפה את הקודמת.</p>
+  <div style="flex:1"></div>
+  <button class="btn" id="editBtn">לעדכון התשובות ✍️</button>
+  <div style="height:10px"></div>
+  <button class="btn ghost" id="keepBtn">התשובות שלי טובות, נתראה בערב</button>
+  <div style="height:14px"></div>
+</section>
+
+<!-- ====== מסך שאלון ====== -->
+<section class="screen" id="s-quiz">
+  <div class="quiz-top">
+    <button class="back-btn" id="backBtn" aria-label="שאלה קודמת">→</button>
+    <div class="progress"><div id="progFill"></div></div>
+    <span class="q-count" id="qCount"></span>
+  </div>
+  <div class="stack" id="stack"></div>
+  <p class="swipe-hint" id="hint"></p>
+</section>
+
+<!-- ====== מסך סיום ====== -->
+<section class="screen" id="s-done">
+  <div class="done-ava" id="doneAva">🪩</div>
+  <h2 class="logo display" style="font-size:34px">זהו, את/ה בפנים!</h2>
+  <p class="note" style="margin-top:14px">
+    התשובות נשמרו והקסם התחיל לעבוד.<br>
+    הערב, כשהמנחים יתנו את האות, ניכנס לאותו קישור<br>
+    ונגלה מי הסולמייט שלך 💘<br><br>
+    <b style="color:var(--gold-l)">טיפ: תשאירו את הקישור פתוח או שמרו אותו.</b>
+  </p>
+  <div style="flex:1"></div>
+  <button class="btn ghost" id="reEditBtn">רגע, רוצה לשנות תשובה</button>
+  <div style="height:14px"></div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_API = 'https://ndrhiikczkbosentclnh.supabase.co/functions/v1/app/api';
+const API = new URLSearchParams(location.search).get('api')
+  || (location.hostname.endsWith('.supabase.co') ? (location.pathname.replace(/\/+$/,'') + '/api') : SUPA_API);
+const $ = s => document.querySelector(s);
+const screens = ['s-landing','s-reg','s-again','s-quiz','s-done','s-who','s-wait','s-count','s-match'];
+function show(id){ screens.forEach(s=>$('#'+s).classList.toggle('on', s===id)); }
+function toast(msg, ms=2600){ const t=$('#toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'), ms); }
+const vibrate = p => navigator.vibrate && navigator.vibrate(p);
+
+/* ---- נצנצים ---- */
+(function(){ const box=$('#sparkles');
+  for(let i=0;i<26;i++){ const d=document.createElement('div');
+    d.className='sp'+(i%3==0?' pink':'');
+    d.style.left=(Math.random()*100)+'%'; d.style.top=(60+Math.random()*40)+'%';
+    d.style.animationDuration=(7+Math.random()*9)+'s';
+    d.style.animationDelay=(Math.random()*9)+'s';
+    const s=.5+Math.random(); d.style.width=6*s+'px'; d.style.height=6*s+'px';
+    box.appendChild(d); }})();
+
+/* ---- מצב ---- */
+let questions=[], answers={}, qi=0, me=null, avatar=null; // avatar: {kind:'photo',data}|{kind:'preset',emoji}
+const PRESETS=['🪩','👑','💎','🌟','🦄','🔥','💃','🕺','🎸','🍉','🚀','🧿'];
+const store = { get:k=>localStorage.getItem('hotamnami_'+k), set:(k,v)=>localStorage.setItem('hotamnami_'+k,v) };
+
+async function api(path, body){
+  const res = await fetch(API+path, body
+    ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}
+    : undefined);
+  const j = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(j.error || 'שגיאה בתקשורת');
+  return j;
+}
+
+/* ---- אווטר ---- */
+const grid=$('#presetGrid');
+PRESETS.forEach((em,i)=>{ const d=document.createElement('div'); d.className='preset'; d.textContent=em;
+  d.style.background=`linear-gradient(135deg, hsl(${(i*47)%360} 70% 22%), hsl(${(i*47+40)%360} 80% 38%))`;
+  d.onclick=()=>{ grid.querySelectorAll('.preset').forEach(p=>p.classList.remove('sel')); d.classList.add('sel');
+    avatar={kind:'preset',emoji:em,bg:d.style.background};
+    const pv=$('#avaPreview'); pv.innerHTML=''; pv.textContent=em; pv.style.background=d.style.background; vibrate(8); };
+  grid.appendChild(d); });
+$('#presetBtn').onclick=()=>grid.classList.toggle('open');
+$('#camBtn').onclick=()=>$('#camInput').click();
+$('#upBtn').onclick=()=>$('#upInput').click();
+[['#camInput'],['#upInput']].forEach(([sel])=>{
+  $(sel).addEventListener('change', async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const data=await compress(f,420);
+    avatar={kind:'photo',data};
+    const pv=$('#avaPreview'); pv.style.background='none'; pv.innerHTML=`<img src="${data}">`;
+    grid.classList.remove('open'); vibrate(8);
+  });});
+function compress(file,max){ return new Promise(ok=>{ const img=new Image();
+  img.onload=()=>{ const sc=Math.min(1,max/Math.max(img.width,img.height));
+    const c=document.createElement('canvas'); c.width=img.width*sc; c.height=img.height*sc;
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    ok(c.toDataURL('image/jpeg',.82)); URL.revokeObjectURL(img.src); };
+  img.src=URL.createObjectURL(file); }); }
+
+/* ---- רישום ---- */
+$('#startBtn').onclick=()=>{ show('s-reg'); vibrate(10); };
+$('#regForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const name=$('#fName').value.trim(), email=$('#fEmail').value.trim().toLowerCase(), phone=$('#fPhone').value.replace(/[^\d+]/g,'');
+  let ok=true;
+  $('#eName').textContent  = name.length>=2 ? '' : (ok=false,'איך קוראים לך? לפחות שני תווים');
+  $('#eEmail').textContent = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? '' : (ok=false,'נראה שהמייל לא תקין');
+  $('#ePhone').textContent = /^(\+?972|0)?5\d{8}$/.test(phone) ? '' : (ok=false,'מספר נייד ישראלי, למשל 0501234567');
+  if(!ok) return vibrate([30,40,30]);
+  if(!avatar) avatar={kind:'preset',emoji:'🪩',bg:'linear-gradient(135deg,#3a2350,#ff4d9d)'};
+  const btn=$('#regBtn'); btn.disabled=true; btn.textContent='שומרים... ✨';
+  try{
+    const r = await api('/register',{full_name:name,email,phone,avatar});
+    me=r.participant; store.set('token',me.token); store.set('pid',me.id);
+    store.set('name',me.full_name); store.set('avatar',me.avatar_url||'');
+    answers = r.answers || {};
+    setAva($('#doneAva')); setAva($('#againAva'));
+    if(r.existing && Object.keys(answers).length){
+      $('#againName').textContent = me.full_name.split(' ')[0];
+      show('s-again');
+    } else { startQuiz(0); }
+  }catch(err){ toast(err.message); }
+  btn.disabled=false; btn.textContent='לשאלות 💛';
+});
+function setAva(el){
+  if(me && me.avatar_url){ el.style.background='none'; el.innerHTML=`<img src="${me.avatar_url}">`; }
+  else if(avatar && avatar.kind==='preset'){ el.innerHTML=''; el.textContent=avatar.emoji; el.style.background=avatar.bg; }
+}
+$('#editBtn').onclick=()=>startQuiz(0);
+$('#keepBtn').onclick=()=>{ show('s-done'); celebrate(); startPolling(); };
+$('#reEditBtn').onclick=()=>startQuiz(0);
+
+/* ---- שאלון: ערימת קלפים ---- */
+function startQuiz(from){ qi=from; show('s-quiz'); render(true); }
+function render(deal){
+  const st=$('#stack'); st.innerHTML='';
+  $('#progFill').style.width = (qi/questions.length*100)+'%';
+  $('#qCount').textContent = (qi+1)+'/'+questions.length;
+  $('#backBtn').disabled = qi===0;
+  if(qi>=questions.length) return finish();
+  for(let d=Math.min(2,questions.length-1-qi); d>=0; d--){
+    const card=buildCard(questions[qi+d], d===0);
+    if(d===1)card.classList.add('under1'); if(d===2)card.classList.add('under2');
+    if(d===0&&deal)card.classList.add('deal-in');
+    st.appendChild(card);
+  }
+  const q=questions[qi];
+  $('#hint').textContent = q.qtype==='yes_no' ? 'החלקה ימינה = כן · שמאלה = לא' : '';
+}
+function buildCard(q, top){
+  const c=document.createElement('div'); c.className='card';
+  const topicTag = q.topic==='work' ? '💼 עבודה' : '✨ '+(qi+1<10?'שאלה '+(questions.indexOf(q)+1):'שאלה '+(questions.indexOf(q)+1));
+  c.innerHTML=`<div class="q-topic">${topicTag}</div>
+    <div class="q-text">${esc(q.text)}</div>
+    <div class="q-prev" id="prevNote"></div>
+    <div class="q-body"></div>
+    <div class="stamp yes">כן</div><div class="stamp no">לא</div>`;
+  if(!top) return c;
+  const body=c.querySelector('.q-body');
+  const prev=answers[q.id];
+  if(prev!==undefined && prev!==''){ const n=c.querySelector('#prevNote');
+    n.style.display='block'; n.textContent='התשובה הקודמת שלך: '+prev; }
+  if(q.qtype==='yes_no'){
+    body.innerHTML=`<div class="yn-row">
+      <button class="yn no">לא 👎</button><button class="yn yes">כן 👍</button></div>`;
+    body.querySelector('.yes').onclick=()=>fly(c,'right',q,'כן');
+    body.querySelector('.no').onclick=()=>fly(c,'left',q,'לא');
+    enableSwipe(c,q);
+  } else if(q.qtype==='choice'){
+    (q.options||[]).forEach(op=>{ const b=document.createElement('button'); b.className='opt'; b.type='button';
+      b.textContent=op; if(prev===op)b.classList.add('sel');
+      b.onclick=()=>{ body.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel')); b.classList.add('sel');
+        vibrate(10); setTimeout(()=>fly(c,'left',q,op),190); };
+      body.appendChild(b); });
+  } else { // פתוחה
+    const ta=document.createElement('textarea'); ta.className='open-in'; ta.maxLength=240;
+    ta.placeholder='כמה מילים מהלב...'; if(prev)ta.value=prev;
+    const b=document.createElement('button'); b.className='btn pink'; b.type='button';
+    b.style.maxWidth='none'; b.textContent='המשך 💌';
+    b.onclick=()=>{ const v=ta.value.trim(); if(!v) return toast('שווה לכתוב משהו, זה חלק מהקסם'); fly(c,'left',q,v); };
+    body.append(ta,b);
+  }
+  return c;
+}
+function fly(card,dir,q,val){
+  answers[q.id]=val; vibrate(14);
+  saveOne(q.id,val);
+  card.classList.add(dir==='right'?'fly-right':'fly-left');
+  setTimeout(()=>{ qi++; render(true); },300);
+}
+function enableSwipe(card,q){
+  let sx=0, sy=0, dx=0, drag=false;
+  const yes=card.querySelector('.stamp.yes'), no=card.querySelector('.stamp.no');
+  card.addEventListener('pointerdown',e=>{ if(e.target.closest('button,textarea'))return;
+    drag=true; sx=e.clientX; sy=e.clientY; card.classList.add('dragging'); card.setPointerCapture(e.pointerId); });
+  card.addEventListener('pointermove',e=>{ if(!drag)return; dx=e.clientX-sx; const dy=e.clientY-sy;
+    card.style.transform=`translate(${dx}px,${dy*0.25}px) rotate(${dx/16}deg)`;
+    yes.style.opacity=Math.max(0,dx/90); no.style.opacity=Math.max(0,-dx/90); });
+  const end=()=>{ if(!drag)return; drag=false; card.classList.remove('dragging');
+    if(dx>92) fly(card,'right',q,'כן');
+    else if(dx<-92) fly(card,'left',q,'לא');
+    else { card.style.transform=''; yes.style.opacity=0; no.style.opacity=0; }
+    dx=0; };
+  card.addEventListener('pointerup',end); card.addEventListener('pointercancel',end);
+}
+$('#backBtn').onclick=()=>{ if(qi>0){ qi--; render(true); vibrate(8); } };
+
+async function saveOne(qid,val){
+  try{ await api('/answers',{participant_id:me.id, token:me.token, answers:[{question_id:qid, value:val}]}); }
+  catch(e){ /* שמירה חוזרת בסיום */ }
+}
+async function finish(){
+  $('#progFill').style.width='100%';
+  try{
+    const list=Object.entries(answers).map(([question_id,value])=>({question_id,value}));
+    await api('/answers',{participant_id:me.id, token:me.token, answers:list, complete:true});
+  }catch(e){ toast('חלק מהתשובות לא נשמרו, בדקו חיבור ונסו שוב'); }
+  setAva($('#doneAva')); show('s-done'); celebrate(); startPolling();
+}
+
+/* ---- קונפטי ---- */
+function celebrate(){ vibrate([20,60,20,60,40]);
+  const colors=['#f5d67b','#d4af37','#ff4d9d','#ff8fc6','#ffffff'];
+  for(let i=0;i<90;i++){ const d=document.createElement('div'); d.className='confetti';
+    const s=6+Math.random()*8; d.style.width=s+'px'; d.style.height=s*0.5+'px';
+    d.style.left=Math.random()*100+'vw'; d.style.background=colors[i%colors.length];
+    d.style.animationDuration=(2.2+Math.random()*2.4)+'s'; d.style.animationDelay=(Math.random()*0.9)+'s';
+    document.body.appendChild(d); setTimeout(()=>d.remove(),6000); } }
+
+/* ---- שלב הערב: זיהוי, המתנה, ספירה לאחור וחשיפה ---- */
+let shownRound = 0, pollTimer = null, counting = false;
+
+$('#myMatchBtn').onclick = async ()=>{
+  const pid=store.get('pid'), tok=store.get('token');
+  if(pid && tok){
+    try{ const r=await api('/me',{participant_id:pid, token:tok}); enterEvening(r); return; }
+    catch(e){ /* האסימון לא תקף, נבקש זיהוי */ }
+  }
+  show('s-who');
+};
+$('#whoBackBtn').onclick = ()=>show('s-landing');
+$('#whoForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const v=$('#whoInput').value.trim();
+  if(v.length<6){ $('#eWho').textContent='הקלידו מייל מלא או מספר טלפון'; return; }
+  $('#eWho').textContent='';
+  try{
+    const r=await api('/me',{lookup:v});
+    store.set('pid',r.participant.id); store.set('token',r.participant.token);
+    me=r.participant; enterEvening(r);
+  }catch(err){ $('#eWho').textContent=err.message; vibrate([30,40,30]); }
+});
+
+function enterEvening(r){
+  me = r.participant;
+  setWaitAva();
+  $('#waitName').textContent = me.full_name.split(' ')[0];
+  if(r.match && r.state.current_round>0){
+    // נכנסים באמצע סיבוב חשוף: עדיין נותנים את רגע המתח
+    shownRound = r.state.current_round;
+    startCountdown(r.match);
+  } else {
+    $('#waitMsg').textContent = r.state.phase==='registration' ? 'הקסם מתבשל' : 'השאלון נסגר, השידוכים בדרך';
+    show('s-wait');
+  }
+  startPolling();
+}
+function setWaitAva(){
+  const el=$('#waitAva');
+  if(me && me.avatar_url){ el.style.background='none'; el.innerHTML=`<img src="${esc(me.avatar_url)}">`; }
+}
+function startPolling(){
+  if(pollTimer) return;
+  pollTimer=setInterval(checkReveal, 4000);
+}
+async function checkReveal(){
+  if(counting) return;
+  const pid=store.get('pid'), tok=store.get('token');
+  if(!pid||!tok) return;
+  try{
+    const r=await api('/me',{participant_id:pid, token:tok});
+    me=r.participant;
+    if(r.state.current_round>0 && r.state.current_round!==shownRound && r.match){
+      shownRound=r.state.current_round;
+      startCountdown(r.match);
+    } else if(r.state.current_round===0 && ['s-match','s-count'].includes(curScreen())){
+      shownRound=0; $('#waitMsg').textContent='מתכוננים לסיבוב הבא'; show('s-wait');
+    }
+  }catch(e){ /* ננסה שוב בסקירה הבאה */ }
+}
+function curScreen(){ return screens.find(s=>$('#'+s).classList.contains('on')); }
+
+/* ספירה לאחור של 5 שניות ואז החשיפה */
+function startCountdown(match){
+  counting=true;
+  show('s-count');
+  const num=$('#countNum');
+  let n=5;
+  const tick=()=>{
+    if(n===0){ counting=false; revealMatch(match); return; }
+    num.textContent=n;
+    num.classList.remove('tick'); void num.offsetWidth; num.classList.add('tick');
+    vibrate(n>1?30:[40,80,120]);
+    n--; setTimeout(tick,1000);
+  };
+  tick();
+}
+function revealMatch(m){
+  // קרני אור מסתובבות
+  const rays=$('#rays'); rays.innerHTML='';
+  for(let i=0;i<14;i++){ const d=document.createElement('div'); d.className='ray';
+    d.style.rotate=(i*(360/14))+'deg'; d.style.animationDelay='0s, '+(-i*(14/14))+'s'; rays.appendChild(d); }
+  $('#matchRound').textContent='✨ '+(m.title||'הסולמייט שלך')+' ✨';
+  const avas=$('#matchAvas'); avas.innerHTML='';
+  const mk=(p,small)=>{ const d=document.createElement('div'); d.className='match-ava'+(small?' small':'');
+    if(p&&p.avatar_url) d.innerHTML=`<img src="${esc(p.avatar_url)}">`; else d.textContent='🪩';
+    return d; };
+  if(m.partner2){
+    avas.appendChild(mk(m.partner,true)); avas.appendChild(mk(m.partner2,true));
+    $('#matchName').textContent=m.partner.full_name+' + '+m.partner2.full_name;
+  } else {
+    avas.appendChild(mk(m.partner,false));
+    $('#matchName').textContent=m.partner?m.partner.full_name:'';
+  }
+  $('#matchMission').textContent=m.mission||'';
+  const reveal=$('#matchReveal'); reveal.style.animation='none'; void reveal.offsetWidth; reveal.style.animation='';
+  show('s-match');
+  celebrate();
+  countUp($('#matchPct'), Math.round(m.score||0), 1500);
+}
+function countUp(el,target,dur){
+  const t0=performance.now();
+  const step=t=>{ const p=Math.min(1,(t-t0)/dur);
+    el.textContent=Math.round(target*(1-Math.pow(1-p,3)));
+    if(p<1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+
+/* ---- אתחול ---- */
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+(async function init(){
+  try{ const r=await api('/questions'); questions=r.questions; }
+  catch(e){ toast('לא הצלחנו לטעון את השאלות, רעננו את העמוד'); }
+  // מי שכבר נרשם מהמכשיר הזה, והערב בעיצומו: ישר פנימה
+  const pid=store.get('pid'), tok=store.get('token');
+  if(pid && tok){
+    try{
+      const r=await api('/me',{participant_id:pid, token:tok});
+      if(r.state.phase!=='registration' || r.state.current_round>0) enterEvening(r);
+    }catch(e){ /* נשארים במסך הפתיחה */ }
+  }
+})();
+</script>
+</body>
+</html>
