@@ -297,7 +297,8 @@ function showSlide(i){
   document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('on', j===slideIdx));
   // אנימציית העמודות של השקף הנוכחי
   slides[slideIdx].querySelectorAll('.bar-fill').forEach(b=>{
-    b.style.width='0'; requestAnimationFrame(()=>setTimeout(()=>b.style.width=b.dataset.w+'%',60));
+    b.style.transition='none'; b.style.width='0';
+    setTimeout(()=>{ b.style.transition=''; b.style.width=b.dataset.w+'%'; }, 120);
   });
 }
 function startCountdown(r){
