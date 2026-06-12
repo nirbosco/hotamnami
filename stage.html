@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>חוֹתָמְנָמִי · מסך האולם</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&family=Secular+One&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+:root{--bg:#0b0710;--gold:#d4af37;--gold-l:#f5d67b;--pink:#ff4d9d;--pink-l:#ff8fc6;
+  --pink-glow:rgba(255,77,157,.55);--white:#fff8f0;--muted:#bba9c9;--card:#1a0f22;--edge:rgba(245,214,123,.35)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Heebo',sans-serif;color:var(--white);overflow:hidden;
+  background:
+    radial-gradient(1200px 700px at 85% -10%, rgba(255,77,157,.18), transparent 60%),
+    radial-gradient(1000px 650px at 8% 110%, rgba(212,175,55,.16), transparent 60%),
+    linear-gradient(160deg,#0b0710 30%,#160d1c 100%)}
+.display{font-family:'Secular One',sans-serif}
+
+/* נצנצים */
+#sparkles{position:fixed;inset:0;pointer-events:none;z-index:1}
+.sp{position:absolute;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,var(--gold-l) 40%,transparent 75%);
+  animation:floatUp linear infinite;opacity:0}
+.sp.pink{background:radial-gradient(circle,#fff 0%,var(--pink-l) 40%,transparent 75%)}
+@keyframes floatUp{0%{transform:translateY(12vh) scale(.4);opacity:0}12%{opacity:.95}70%{opacity:.7}
+  100%{transform:translateY(-112vh) scale(1.2);opacity:0}}
+
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:4vh 5vw;z-index:2;opacity:0;pointer-events:none;transform:scale(.98);
+  transition:opacity .6s ease,transform .6s ease}
+.screen.on{opacity:1;pointer-events:auto;transform:scale(1)}
+
+.logo{font-size:clamp(40px,6.5vw,110px);line-height:1.1;
+  background:linear-gradient(100deg,var(--gold-l) 15%,#fff 38%,var(--gold) 55%,var(--pink-l) 85%);
+  background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:shimmer 4.5s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(245,214,123,.35))}
+@keyframes shimmer{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+.tagline{color:var(--muted);font-size:clamp(16px,1.8vw,30px);letter-spacing:.08em;margin-top:1vh}
+
+/* הרשמה */
+.reg-grid{display:flex;gap:6vw;align-items:center;margin-top:5vh;flex-wrap:wrap;justify-content:center}
+.qr-box{background:#fff;border-radius:28px;padding:22px;
+  box-shadow:0 0 60px rgba(255,77,157,.35),0 0 120px rgba(212,175,55,.25)}
+#qr{display:block;width:min(34vh,30vw);height:min(34vh,30vw)}
+.reg-side{text-align:center;max-width:34vw;min-width:280px}
+.big-num{font-family:'Secular One';font-size:clamp(70px,11vw,190px);line-height:1;
+  background:linear-gradient(160deg,var(--gold-l),var(--pink));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 26px var(--pink-glow))}
+.big-num-label{font-size:clamp(16px,1.7vw,28px);color:var(--muted)}
+.steps{margin-top:4vh;font-size:clamp(16px,1.6vw,26px);line-height:2;color:var(--white);text-align:right}
+.steps b{color:var(--gold-l)}
+
+/* נעול */
+.spinner{width:min(9vh,70px);height:min(9vh,70px);border-radius:50%;margin:5vh auto;
+  border:5px solid rgba(245,214,123,.2);border-top-color:var(--gold-l);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ספירה לאחור */
+#s-count{background:rgba(5,2,8,.55)}
+.count-label{color:var(--pink-l);font-size:clamp(20px,2.4vw,44px);letter-spacing:.14em;font-weight:600;
+  animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.count-num{font-family:'Secular One';font-size:min(52vh,40vw);line-height:1;
+  background:linear-gradient(160deg,var(--gold-l) 20%,#fff 45%,var(--pink) 80%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 70px var(--pink-glow))}
+.count-num.tick{animation:punch 1s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes punch{0%{transform:scale(2.2);opacity:0;filter:blur(18px)}28%{transform:scale(1);opacity:1;filter:blur(0)}
+  85%{transform:scale(.95)}100%{transform:scale(.9);opacity:.6}}
+
+/* חשיפה */
+.round-chip{color:var(--pink-l);font-size:clamp(18px,2vw,34px);letter-spacing:.12em;font-weight:600;
+  border:2px solid rgba(255,77,157,.4);border-radius:999px;padding:1vh 3vw;background:rgba(255,77,157,.1)}
+.round-title{font-family:'Secular One';font-size:clamp(40px,6vw,100px);margin-top:2.5vh;text-align:center;
+  background:linear-gradient(100deg,var(--gold-l) 15%,#fff 45%,var(--pink-l) 85%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 26px rgba(245,214,123,.3))}
+.go-find{font-size:clamp(20px,2.4vw,42px);margin-top:1.5vh;color:var(--white);animation:pulse 2.2s infinite}
+.reveal-grid{display:flex;gap:5vw;align-items:stretch;margin-top:4.5vh;flex-wrap:wrap;justify-content:center}
+.panel{background:rgba(26,15,34,.85);border:1.5px solid var(--edge);border-radius:30px;
+  padding:3.5vh 3vw;max-width:46vw;min-width:320px}
+.panel h3{color:var(--gold-l);font-size:clamp(15px,1.4vw,24px);letter-spacing:.14em;margin-bottom:1.6vh;text-align:center}
+.mission-text{font-size:clamp(19px,2vw,36px);line-height:1.65;text-align:center}
+.top-card{border-color:rgba(255,77,157,.55);box-shadow:0 0 50px rgba(255,77,157,.25);
+  display:flex;flex-direction:column;align-items:center;animation:topIn 1s .3s cubic-bezier(.18,1.1,.3,1.15) both}
+@keyframes topIn{0%{transform:scale(.4) rotate(-5deg);opacity:0;filter:blur(8px)}
+  65%{transform:scale(1.05) rotate(1deg);filter:blur(0)}100%{transform:scale(1);opacity:1}}
+.top-avas{display:flex;justify-content:center}
+.top-ava{width:min(17vh,11vw);height:min(17vh,11vw);border-radius:50%;overflow:hidden;font-size:5vh;
+  display:flex;align-items:center;justify-content:center;border:4px solid transparent;
+  background:linear-gradient(var(--card),var(--card)) padding-box,
+             conic-gradient(var(--gold-l),var(--pink),#fff,var(--gold),var(--gold-l)) border-box;
+  box-shadow:0 0 36px rgba(255,77,157,.45)}
+.top-ava img{width:100%;height:100%;object-fit:cover}
+.top-ava+.top-ava{margin-inline-start:-2vw}
+.top-names{font-family:'Secular One';font-size:clamp(20px,2.2vw,40px);margin-top:1.6vh;text-align:center}
+.top-score{font-family:'Secular One';font-size:clamp(40px,5vw,90px);line-height:1;color:var(--pink);
+  text-shadow:0 0 30px var(--pink-glow);margin-top:.6vh}
+.top-score small{font-size:.45em}
+.confetti{position:fixed;top:-16px;border-radius:3px;pointer-events:none;z-index:60;animation:cfall linear forwards}
+@keyframes cfall{to{transform:translateY(112vh) rotate(720deg);opacity:.2}}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="sparkles"></div>
+
+<!-- הרשמה -->
+<section class="screen on" id="s-reg">
+  <h1 class="logo display">חוֹתָמְנָמִי 💘</h1>
+  <p class="tagline">חיבורים ממבט ראשון</p>
+  <div class="reg-grid">
+    <div class="qr-box"><canvas id="qr"></canvas></div>
+    <div class="reg-side">
+      <div class="big-num" id="regCount">0</div>
+      <div class="big-num-label">כבר בפנים</div>
+      <div class="steps">
+        <div><b>1.</b> סורקים את הקוד</div>
+        <div><b>2.</b> עונים על 10 שאלות (דקה וחצי)</div>
+        <div><b>3.</b> הערב מגלים מי הסולמייט שלכם</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- נעול -->
+<section class="screen" id="s-locked">
+  <h1 class="logo display">הקסם מתבשל 🔮</h1>
+  <div class="spinner"></div>
+  <p class="tagline">השאלון נסגר. המערכת מצליבה <span id="lockedCount">150</span> לבבות...</p>
+</section>
+
+<!-- ספירה לאחור -->
+<section class="screen" id="s-count">
+  <div class="count-label" id="countLabel">המאצ'ים נחשפים בעוד</div>
+  <div class="count-num" id="countNum">5</div>
+</section>
+
+<!-- חשיפה -->
+<section class="screen" id="s-reveal">
+  <div class="round-chip" id="roundChip"></div>
+  <h1 class="round-title display" id="roundTitle"></h1>
+  <p class="go-find">📱 הביטו בטלפון, מצאו זה את זה 🔦</p>
+  <div class="reveal-grid">
+    <div class="panel">
+      <h3>✦ המשימה שלכם ✦</h3>
+      <p class="mission-text" id="missionText"></p>
+    </div>
+    <div class="panel top-card" id="topCard">
+      <h3>👑 המאצ' של הסיבוב 👑</h3>
+      <div class="top-avas" id="topAvas"></div>
+      <div class="top-names" id="topNames"></div>
+      <div class="top-score"><span id="topScore">0</span><small>%</small></div>
+    </div>
+  </div>
+</section>
+
+<script>
+const SUPA_API = 'https://ndrhiikczkbosentclnh.supabase.co/functions/v1/app/api';
+const API = new URLSearchParams(location.search).get('api') || SUPA_API;
+const APP_URL = 'https://nirbosco.github.io/hotamnami/';
+const $ = s => document.querySelector(s);
+const screens = ['s-reg','s-locked','s-count','s-reveal'];
+function show(id){ screens.forEach(s=>$('#'+s).classList.toggle('on', s===id)); }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* נצנצים */
+(function(){ const box=$('#sparkles');
+  for(let i=0;i<40;i++){ const d=document.createElement('div');
+    d.className='sp'+(i%3==0?' pink':'');
+    d.style.left=(Math.random()*100)+'%'; d.style.top=(60+Math.random()*40)+'%';
+    d.style.animationDuration=(7+Math.random()*9)+'s'; d.style.animationDelay=(Math.random()*9)+'s';
+    const s=.6+Math.random()*1.2; d.style.width=7*s+'px'; d.style.height=7*s+'px';
+    box.appendChild(d); }})();
+
+/* QR */
+QRCode.toCanvas($('#qr'), APP_URL, {width:600, margin:1,
+  color:{dark:'#0b0710', light:'#ffffff'}}, ()=>{});
+
+let shownRound=0, counting=false, lastData=null;
+
+async function poll(){
+  if(counting) return;
+  try{
+    const r = await (await fetch(API+'/stage')).json();
+    lastData=r;
+    $('#regCount').textContent=r.registered;
+    $('#lockedCount').textContent=r.registered;
+    const round=r.state.current_round;
+    if(round>0 && round!==shownRound){
+      shownRound=round;
+      startCountdown(r);
+    } else if(round===0){
+      shownRound=0;
+      show(r.state.phase==='registration' ? 's-reg' : 's-locked');
+    } else if(round>0 && !$('#s-count').classList.contains('on')){
+      renderReveal(r); // עדכון שוטף של נתוני הסיבוב החשוף
+    }
+  }catch(e){ /* ננסה שוב */ }
+}
+function startCountdown(r){
+  counting=true; show('s-count');
+  const num=$('#countNum'); let n=5;
+  const tick=()=>{
+    if(n===0){ counting=false; renderReveal(r); show('s-reveal'); celebrate(); return; }
+    num.textContent=n;
+    num.classList.remove('tick'); void num.offsetWidth; num.classList.add('tick');
+    n--; setTimeout(tick,1000);
+  };
+  tick();
+}
+function renderReveal(r){
+  const round=(r.rounds||[]).find(x=>x.round_no===r.state.current_round) || {};
+  $('#roundChip').textContent='סיבוב '+r.state.current_round+' מתוך '+(r.rounds||[]).length;
+  $('#roundTitle').textContent=round.title||'';
+  $('#missionText').textContent=round.mission||'';
+  if(r.top && r.top.people && r.top.people.length){
+    $('#topCard').classList.remove('hidden');
+    $('#topAvas').innerHTML=r.top.people.map(p=>
+      `<div class="top-ava">${p.avatar_url?`<img src="${esc(p.avatar_url)}">`:'🪩'}</div>`).join('');
+    $('#topNames').textContent=r.top.people.map(p=>p.full_name).join(' + ');
+    countUp($('#topScore'), Math.round(r.top.score||0), 1600);
+  } else {
+    $('#topCard').classList.add('hidden');
+  }
+  if(!$('#s-reveal').classList.contains('on')) show('s-reveal');
+}
+function countUp(el,target,dur){
+  const t0=performance.now();
+  const step=t=>{ const p=Math.min(1,(t-t0)/dur);
+    el.textContent=Math.round(target*(1-Math.pow(1-p,3)));
+    if(p<1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function celebrate(){
+  const colors=['#f5d67b','#d4af37','#ff4d9d','#ff8fc6','#ffffff'];
+  for(let i=0;i<160;i++){ const d=document.createElement('div'); d.className='confetti';
+    const s=8+Math.random()*12; d.style.width=s+'px'; d.style.height=s*0.5+'px';
+    d.style.left=Math.random()*100+'vw'; d.style.background=colors[i%colors.length];
+    d.style.animationDuration=(2.4+Math.random()*2.6)+'s'; d.style.animationDelay=(Math.random()*1.2)+'s';
+    document.body.appendChild(d); setTimeout(()=>d.remove(),7000); }
+}
+poll(); setInterval(poll, 3000);
+</script>
+</body>
+</html>
