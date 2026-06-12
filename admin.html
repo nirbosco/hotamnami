@@ -155,6 +155,14 @@ code{background:rgba(11,7,16,.7);padding:2px 7px;border-radius:6px;font-size:13p
         <div id="roundsList"></div>
         <button class="btn ghost sm" id="hideBtn" style="margin-top:10px">⏸️ החזרת כולם למסך המתנה</button>
       </div>
+      <div class="panel">
+        <b>4 · סטטיסטיקות על המסך 📊</b>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 12px">מסך האולם עובר לשקפים מתחלפים, בלי שמות: כמה ענו בדיוק אותו דבר על הכול, וההתפלגות בכל שאלה. הטלפונים של המשתתפים לא מושפעים.</p>
+        <div class="row">
+          <button class="btn pink sm" id="statsOnBtn">📊 הצגת סטטיסטיקות</button>
+          <button class="btn ghost sm" id="statsOffBtn">חזרה למסך הרגיל</button>
+        </div>
+      </div>
     </div>
 
     <div id="t-settings" class="hidden">
@@ -272,7 +280,7 @@ async function refresh(){
 }
 
 /* ---- לשונית הערב ---- */
-const PHASE_NAMES={registration:'הרשמה פתוחה',locked:'שאלון נעול',reveal:'חשיפה'};
+const PHASE_NAMES={registration:'הרשמה פתוחה',locked:'שאלון נעול',reveal:'חשיפה',stats:'סטטיסטיקות'};
 function renderEvent(){
   const st=DATA.state||{}, ms=DATA.match_stats||{};
   $('#evPhase').textContent=PHASE_NAMES[st.phase]||st.phase;
@@ -307,6 +315,11 @@ function renderEvent(){
 $('#lockBtn').onclick=async()=>{ await api('/admin/state',{phase:'locked'}); toast('השאלון ננעל 🔒'); refresh(); };
 $('#unlockBtn').onclick=async()=>{ await api('/admin/state',{phase:'registration'}); toast('ההרשמה נפתחה שוב'); refresh(); };
 $('#hideBtn').onclick=async()=>{ await api('/admin/state',{current_round:0}); toast('כולם חזרו למסך ההמתנה'); refresh(); };
+$('#statsOnBtn').onclick=async()=>{ await api('/admin/state',{phase:'stats'}); toast('מסך האולם מציג סטטיסטיקות 📊'); refresh(); };
+$('#statsOffBtn').onclick=async()=>{
+  const ph=(DATA && DATA.state && DATA.state.current_round>0)?'reveal':'locked';
+  await api('/admin/state',{phase:ph}); toast('מסך האולם חזר למצב הרגיל'); refresh();
+};
 $('#computeBtn').onclick=async()=>{
   const btn=$('#computeBtn'); btn.disabled=true; btn.textContent='מחשבים... 🧮';
   try{
