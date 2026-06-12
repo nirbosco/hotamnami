@@ -302,6 +302,8 @@ textarea.open-in:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,77
   <p class="note" style="margin-top:12px"><span id="waitMsg">הקסם מתבשל</span><span class="dots"></span></p>
   <p class="note" style="margin-top:8px;font-size:13px">ברגע שהמנחים יחשפו את הסיבוב,<br>זה יקרה כאן. אל תסגרו את העמוד.</p>
   <div style="flex:1"></div>
+  <button class="btn ghost logout-btn" style="font-size:14px;padding:10px">התנתקות · משתתף אחר במכשיר הזה 🔄</button>
+  <div style="height:14px"></div>
 </section>
 
 <!-- ====== ספירה לאחור ====== -->
@@ -327,6 +329,8 @@ textarea.open-in:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,77
   </div>
   <p class="find-hint">עכשיו צאו למצוא זה את זה באולם 🔦</p>
   <div style="flex:1"></div>
+  <button class="btn ghost logout-btn" style="font-size:13px;padding:8px;max-width:240px;opacity:.7">התנתקות 🔄</button>
+  <div style="height:10px"></div>
 </section>
 
 <!-- ====== מסך רישום ====== -->
@@ -366,6 +370,8 @@ textarea.open-in:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,77
   <button class="btn" id="editBtn">לעדכון התשובות ✍️</button>
   <div style="height:10px"></div>
   <button class="btn ghost" id="keepBtn">התשובות שלי טובות, נתראה בערב</button>
+  <div style="height:10px"></div>
+  <button class="btn ghost logout-btn" style="font-size:14px;padding:10px">זה לא אני · התנתקות 🔄</button>
   <div style="height:14px"></div>
 </section>
 
@@ -392,6 +398,8 @@ textarea.open-in:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,77
   </p>
   <div style="flex:1"></div>
   <button class="btn ghost" id="reEditBtn">רגע, רוצה לשנות תשובה</button>
+  <div style="height:10px"></div>
+  <button class="btn ghost logout-btn" style="font-size:14px;padding:10px">התנתקות · משתתף אחר במכשיר הזה 🔄</button>
   <div style="height:14px"></div>
 </section>
 
@@ -696,6 +704,17 @@ function countUp(el,target,dur){
     if(p<1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
+
+/* ---- התנתקות: מנקה את הזיהוי מהמכשיר ומאפשר למשתתף אחר להירשם ---- */
+document.querySelectorAll('.logout-btn').forEach(b=>b.onclick=()=>{
+  if(!confirm('להתנתק? הנתונים שלך נשארים שמורים במערכת, ותמיד אפשר לחזור עם המייל או הטלפון.'))return;
+  ['pid','token','name','avatar'].forEach(k=>localStorage.removeItem('hotamnami_'+k));
+  if(pollTimer){ clearInterval(pollTimer); pollTimer=null; }
+  me=null; avatar=null; answers={}; qi=0; shownRound=0; counting=false;
+  $('#fName').value=''; $('#fEmail').value=''; $('#fPhone').value='';
+  toast('התנתקת. המכשיר פנוי למשתתף חדש 💫');
+  show('s-landing');
+});
 
 /* ---- אתחול ---- */
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }

@@ -289,8 +289,18 @@ function renderEvent(){
           ${live?'🔁 חשיפה שוב':'🎬 חשיפה'}</button>
       </div>
       <input value="${esc(r.title)}" id="rt-${r.round_no}" placeholder="כותרת הסיבוב">
+      <div class="row">
+        <select id="rc-${r.round_no}" title="המדד">
+          <option value="closest" ${r.crit!=='farthest'?'selected':''}>הכי קרוב (אחוז התאמה גבוה)</option>
+          <option value="farthest" ${r.crit==='farthest'?'selected':''}>הכי רחוק (אחוז התאמה נמוך)</option>
+        </select>
+        <select id="rs-${r.round_no}" title="טווח השאלות">
+          <option value="all" ${r.scope!=='work'?'selected':''}>לפי כל השאלות</option>
+          <option value="work" ${r.scope==='work'?'selected':''}>לפי שאלות 💼 עבודה בלבד</option>
+        </select>
+      </div>
       <textarea id="rm-${r.round_no}" rows="2" placeholder="המשימה של הזוג">${esc(r.mission)}</textarea>
-      <button class="btn ghost sm" onclick="saveRound(${r.round_no})" style="align-self:flex-start">שמירת נוסח</button>
+      <button class="btn ghost sm" onclick="saveRound(${r.round_no})" style="align-self:flex-start">שמירת חוקיות ונוסח</button>
     </div>`;
   }).join('');
 }
@@ -313,8 +323,9 @@ window.revealRound=async n=>{
   toast('סיבוב '+n+' נחשף! 🎬'); refresh();
 };
 window.saveRound=async n=>{
-  await api('/admin/rounds',{rounds:[{round_no:n,title:$('#rt-'+n).value.trim(),mission:$('#rm-'+n).value.trim()}]});
-  toast('הנוסח נשמר'); refresh();
+  await api('/admin/rounds',{rounds:[{round_no:n,title:$('#rt-'+n).value.trim(),mission:$('#rm-'+n).value.trim(),
+    crit:$('#rc-'+n).value, scope:$('#rs-'+n).value}]});
+  toast('נשמר. שינוי חוקיות נכנס לתוקף בחישוב השידוכים הבא'); refresh();
 };
 function renderQ(){
   const qs=DATA.questions;
