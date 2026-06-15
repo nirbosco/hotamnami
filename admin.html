@@ -281,36 +281,52 @@ async function refresh(){
 
 /* ---- לשונית הערב ---- */
 const PHASE_NAMES={registration:'הרשמה פתוחה',locked:'שאלון נעול',reveal:'חשיפה',stats:'סטטיסטיקות'};
+let roundsBuilt=false;
 function renderEvent(){
   const st=DATA.state||{}, ms=DATA.match_stats||{};
   $('#evPhase').textContent=PHASE_NAMES[st.phase]||st.phase;
   $('#evRound').textContent=st.current_round>0?st.current_round:'אין';
   const matched=ms[1]?ms[1].people:0;
   $('#evMatched').textContent=matched||'·';
-  $('#roundsList').innerHTML=(DATA.rounds||[]).map(r=>{
-    const stat=ms[r.round_no];
-    const live=st.current_round===r.round_no;
-    return `<div class="q-item" style="flex-direction:column;align-items:stretch;gap:8px">
+  // בונים את עורך הסיבובים פעם אחת בלבד, כדי שהרענון התקופתי לא ימחק טקסט שמקלידים
+  if(!roundsBuilt){ buildRoundsEditor(DATA.rounds||[]); roundsBuilt=true; }
+  // ברענון מעדכנים רק את החלקים הדינמיים, בלי לגעת בשדות העריכה
+  (DATA.rounds||[]).forEach(r=>{
+    const stat=ms[r.round_no], live=st.current_round===r.round_no;
+    const btn=$('#reveal-'+r.round_no);
+    if(btn){ btn.textContent=live?'🔁 חשיפה שוב':'🎬 חשיפה'; btn.className='btn '+(live?'sm':'pink sm'); btn.disabled=!stat; }
+    const chip=$('#chip-'+r.round_no); if(chip) chip.style.display=(stat&&stat.triple)?'inline-block':'none';
+    const head=$('#rhead-'+r.round_no); if(head) head.firstChild.textContent=r.round_no+' · '+r.title+' ';
+    const llm=$('#rllm-'+r.round_no); if(llm) llm.style.display=(r.rule_text&&r.rule_text.trim())?'block':'none';
+  });
+}
+function buildRoundsEditor(rounds){
+  $('#roundsList').innerHTML=rounds.map(r=>`
+    <div class="q-item" style="flex-direction:column;align-items:stretch;gap:6px">
       <div class="row" style="justify-content:space-between">
-        <b>${r.round_no} · ${esc(r.title)} ${stat&&stat.triple?'<span class="chip">כולל שלשה</span>':''}</b>
-        <button class="btn ${live?'sm':'pink sm'}" onclick="revealRound(${r.round_no})" ${stat?'':'disabled'}>
-          ${live?'🔁 חשיפה שוב':'🎬 חשיפה'}</button>
+        <b id="rhead-${r.round_no}">${r.round_no} · ${esc(r.title)} <span class="chip" id="chip-${r.round_no}" style="display:none">כולל שלשה</span></b>
+        <button class="btn pink sm" id="reveal-${r.round_no}" onclick="revealRound(${r.round_no})" disabled>🎬 חשיפה</button>
       </div>
+      <label style="margin:8px 0 2px">כותרת הסיבוב (מה שהמשתתפים רואים)</label>
       <input value="${esc(r.title)}" id="rt-${r.round_no}" placeholder="כותרת הסיבוב">
+      <label style="margin:8px 0 2px">המשימה של הזוג</label>
+      <textarea id="rm-${r.round_no}" rows="2" placeholder="המשימה של הזוג">${esc(r.mission)}</textarea>
+      <label style="margin:8px 0 2px">חוקיות בסיס</label>
       <div class="row">
-        <select id="rc-${r.round_no}" title="המדד">
-          <option value="closest" ${r.crit!=='farthest'?'selected':''}>הכי קרוב (אחוז התאמה גבוה)</option>
-          <option value="farthest" ${r.crit==='farthest'?'selected':''}>הכי רחוק (אחוז התאמה נמוך)</option>
+        <select id="rc-${r.round_no}">
+          <option value="closest" ${r.crit!=='farthest'?'selected':''}>הכי קרוב (התאמה גבוהה)</option>
+          <option value="farthest" ${r.crit==='farthest'?'selected':''}>הכי רחוק (התאמה נמוכה)</option>
         </select>
-        <select id="rs-${r.round_no}" title="טווח השאלות">
+        <select id="rs-${r.round_no}">
           <option value="all" ${r.scope!=='work'?'selected':''}>לפי כל השאלות</option>
-          <option value="work" ${r.scope==='work'?'selected':''}>לפי שאלות 💼 עבודה בלבד</option>
+          <option value="work" ${r.scope==='work'?'selected':''}>לפי שאלות 💼 עבודה</option>
         </select>
       </div>
-      <textarea id="rm-${r.round_no}" rows="2" placeholder="המשימה של הזוג">${esc(r.mission)}</textarea>
-      <button class="btn ghost sm" onclick="saveRound(${r.round_no})" style="align-self:flex-start">שמירת חוקיות ונוסח</button>
-    </div>`;
-  }).join('');
+      <label style="margin:8px 0 2px">🤖 חוקיות בטקסט חופשי (סוכן Claude)</label>
+      <textarea id="rl-${r.round_no}" rows="2" placeholder='לדוגמה: "תן משקל כפול לשאלות עבודה, התעלם משאלת האננס, חפש את הכי דומים". ריק = חוקיות הבסיס למעלה.'>${esc(r.rule_text||'')}</textarea>
+      <div id="rllm-${r.round_no}" style="display:none;font-size:12px;color:var(--gold-l)">✨ בחישוב הבא, הסוכן יפרש את הטקסט הזה</div>
+      <button class="btn ghost sm" onclick="saveRound(${r.round_no})" style="align-self:flex-start;margin-top:4px">שמירת חוקיות ונוסח</button>
+    </div>`).join('');
 }
 $('#lockBtn').onclick=async()=>{ await api('/admin/state',{phase:'locked'}); toast('השאלון ננעל 🔒'); refresh(); };
 $('#unlockBtn').onclick=async()=>{ await api('/admin/state',{phase:'registration'}); toast('ההרשמה נפתחה שוב'); refresh(); };
@@ -337,8 +353,8 @@ window.revealRound=async n=>{
 };
 window.saveRound=async n=>{
   await api('/admin/rounds',{rounds:[{round_no:n,title:$('#rt-'+n).value.trim(),mission:$('#rm-'+n).value.trim(),
-    crit:$('#rc-'+n).value, scope:$('#rs-'+n).value}]});
-  toast('נשמר. שינוי חוקיות נכנס לתוקף בחישוב השידוכים הבא'); refresh();
+    crit:$('#rc-'+n).value, scope:$('#rs-'+n).value, rule_text:$('#rl-'+n).value.trim()}]});
+  toast('נשמר ✨ שינוי חוקיות נכנס לתוקף בחישוב השידוכים הבא'); refresh();
 };
 function renderQ(){
   const qs=DATA.questions;
