@@ -340,8 +340,9 @@ $('#computeBtn').onclick=async()=>{
   const btn=$('#computeBtn'); btn.disabled=true; btn.textContent='מחשבים... 🧮';
   try{
     const r=await api('/admin/compute',{});
-    $('#computeResult').textContent='שודכו '+r.total+' משתתפים · '+
-      r.summary.map(s=>'סיבוב '+s.round_no+': '+s.pairs+' זוגות'+(s.triple?' (כולל שלשה)':'')+', התאמה ממוצעת '+s.avg+'%').join(' · ');
+    $('#computeResult').innerHTML='שודכו '+r.total+' משתתפים:<br>'+
+      r.summary.map(s=>'סיבוב '+s.round_no+': '+s.pairs+' זוגות'+(s.triple?' (כולל שלשה)':'')+', התאמה ממוצעת '+s.avg+'%'+
+        (s.note?' · <b style="color:'+(s.llm?'var(--gold-l)':'var(--pink-l)')+'">'+esc(s.note)+'</b>':'')).join('<br>');
     toast('השידוכים מוכנים ✨');
   }catch(e){ toast(e.message); }
   btn.disabled=false; btn.textContent='🧮 חישוב השידוכים'; refresh();
