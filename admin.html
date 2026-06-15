@@ -314,8 +314,9 @@ function buildRoundsEditor(rounds){
       <label style="margin:8px 0 2px">חוקיות בסיס</label>
       <div class="row">
         <select id="rc-${r.round_no}">
-          <option value="closest" ${r.crit!=='farthest'?'selected':''}>הכי קרוב (התאמה גבוהה)</option>
+          <option value="closest" ${r.crit==='closest'?'selected':''}>הכי קרוב (התאמה גבוהה)</option>
           <option value="farthest" ${r.crit==='farthest'?'selected':''}>הכי רחוק (התאמה נמוכה)</option>
+          <option value="random" ${r.crit==='random'?'selected':''}>🎲 אקראי (לא גבוה ולא נמוך)</option>
         </select>
         <select id="rs-${r.round_no}">
           <option value="all" ${r.scope!=='work'?'selected':''}>לפי כל השאלות</option>
