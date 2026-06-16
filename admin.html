@@ -349,6 +349,9 @@ $('#computeBtn').onclick=async()=>{
     const r=await api('/admin/compute',{});
     $('#computeResult').innerHTML='שודכו '+r.total+' משתתפים:<br>'+
       r.summary.map(s=>'סיבוב '+s.round_no+': '+s.pairs+' זוגות'+(s.triple?' (כולל שלשה)':'')+', התאמה ממוצעת '+s.avg+'%'+
+        (s.excl ? (s.excl.same===0
+           ? ' · <b style="color:#5dffa8">✓ אף זוג לא מאותה סדנה</b>'
+           : ' · <b style="color:#ff7b7b">⚠️ '+s.excl.same+' זוגות נאלצו מאותה סדנה (סדנה אחת גדולה מדי)</b>') : '')+
         (s.note?' · <b style="color:'+(s.llm?'var(--gold-l)':'var(--pink-l)')+'">'+esc(s.note)+'</b>':'')).join('<br>');
     toast('השידוכים מוכנים ✨');
   }catch(e){ toast(e.message); }
