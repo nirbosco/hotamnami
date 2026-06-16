@@ -212,7 +212,7 @@ code{background:rgba(11,7,16,.7);padding:2px 7px;border-radius:6px;font-size:13p
     <label>נוסח השאלה</label>
     <textarea id="mText" rows="2" placeholder="למשל: פגישה שיכלה להיות מייל?"></textarea>
     <div id="mOptsWrap" class="hidden">
-      <label>אפשרויות (2–4)</label>
+      <label>אפשרויות (2–8)</label>
       <div id="mOpts"></div>
       <button class="btn ghost sm" id="addOptBtn" type="button">+ אפשרות</button>
     </div>
@@ -318,11 +318,17 @@ function buildRoundsEditor(rounds){
           <option value="farthest" ${r.crit==='farthest'?'selected':''}>הכי רחוק (התאמה נמוכה)</option>
           <option value="random" ${r.crit==='random'?'selected':''}>🎲 אקראי (לא גבוה ולא נמוך)</option>
         </select>
-        <select id="rs-${r.round_no}">
-          <option value="all" ${r.scope!=='work'?'selected':''}>לפי כל השאלות</option>
+        <select id="rs-${r.round_no}" onchange="toggleScopeQ(${r.round_no})">
+          <option value="all" ${r.scope==='all'?'selected':''}>לפי כל השאלות</option>
           <option value="work" ${r.scope==='work'?'selected':''}>לפי שאלות 💼 עבודה</option>
+          <option value="question" ${r.scope==='question'?'selected':''}>לפי שאלה ספציפית</option>
         </select>
       </div>
+      <select id="rsq-${r.round_no}" style="display:${r.scope==='question'?'block':'none'};margin-top:6px">
+        ${qPicker(r.scope_qid,'בחרו שאלה...')}
+      </select>
+      <label style="margin:8px 0 2px">🚫 אל תשדך זוג שענה אותו דבר על (למשל: אותה סדנה)</label>
+      <select id="rx-${r.round_no}">${qPicker(r.exclude_qid,'— ללא הגבלה —')}</select>
       <label style="margin:8px 0 2px">🤖 חוקיות בטקסט חופשי (סוכן Claude)</label>
       <textarea id="rl-${r.round_no}" rows="2" placeholder='לדוגמה: "תן משקל כפול לשאלות עבודה, התעלם משאלת האננס, חפש את הכי דומים". ריק = חוקיות הבסיס למעלה.'>${esc(r.rule_text||'')}</textarea>
       <div id="rllm-${r.round_no}" style="display:none;font-size:12px;color:var(--gold-l)">✨ בחישוב הבא, הסוכן יפרש את הטקסט הזה</div>
@@ -353,9 +359,20 @@ window.revealRound=async n=>{
   await api('/admin/state',{phase:'reveal',current_round:n});
   toast('סיבוב '+n+' נחשף! 🎬'); refresh();
 };
+// רשימת שאלות סגורות פעילות לבוחרי השאלה (טווח ספציפי / הפרדת סדנאות)
+function qPicker(sel, placeholder){
+  const qs=(DATA.questions||[]).filter(q=>q.is_active && q.qtype!=='open');
+  return `<option value="">${placeholder}</option>`+
+    qs.map(q=>`<option value="${q.id}" ${sel===q.id?'selected':''}>${q.position}. ${esc(q.text).slice(0,38)}</option>`).join('');
+}
+window.toggleScopeQ=n=>{ $('#rsq-'+n).style.display = $('#rs-'+n).value==='question' ? 'block' : 'none'; };
 window.saveRound=async n=>{
+  const scope=$('#rs-'+n).value;
   await api('/admin/rounds',{rounds:[{round_no:n,title:$('#rt-'+n).value.trim(),mission:$('#rm-'+n).value.trim(),
-    crit:$('#rc-'+n).value, scope:$('#rs-'+n).value, rule_text:$('#rl-'+n).value.trim()}]});
+    crit:$('#rc-'+n).value, scope,
+    scope_qid: scope==='question' ? ($('#rsq-'+n).value||null) : null,
+    exclude_qid: $('#rx-'+n).value||null,
+    rule_text:$('#rl-'+n).value.trim()}]});
   toast('נשמר ✨ שינוי חוקיות נכנס לתוקף בחישוב השידוכים הבא'); refresh();
 };
 function renderQ(){
@@ -406,7 +423,7 @@ $('#addQBtn').onclick=()=>openModal();
 $('#mCancel').onclick=()=>$('#qModalBg').classList.remove('on');
 $('#mType').onchange=()=>{$('#mOptsWrap').classList.toggle('hidden',$('#mType').value!=='choice');
   if($('#mType').value==='choice'&&!$('#mOpts').children.length){addOpt();addOpt();}};
-$('#addOptBtn').onclick=()=>{ if($('#mOpts').children.length>=4) return toast('עד 4 אפשרויות'); addOpt(); };
+$('#addOptBtn').onclick=()=>{ if($('#mOpts').children.length>=8) return toast('עד 8 אפשרויות'); addOpt(); };
 function addOpt(v=''){const d=document.createElement('div');d.className='opt-row';
   d.innerHTML=`<input value="${esc(v)}" placeholder="אפשרות"><button class="icon-btn" type="button">✕</button>`;
   d.querySelector('button').onclick=()=>{if($('#mOpts').children.length>2)d.remove();else toast('לפחות 2 אפשרויות');};

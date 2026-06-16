@@ -137,7 +137,9 @@ body{
 .q-text{font-size:clamp(23px,6.4vw,30px);font-weight:800;line-height:1.35;flex-shrink:0}
 .q-prev{margin-top:12px;font-size:14px;color:var(--gold-l);background:rgba(212,175,55,.1);
   border:1px dashed var(--card-edge);border-radius:12px;padding:8px 12px;display:none}
-.q-body{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:11px;margin-top:18px}
+.q-body{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:11px;margin-top:18px;
+  overflow-y:auto;min-height:0}
+.q-body::-webkit-scrollbar{width:0}
 
 /* חותמות כן/לא */
 .stamp{position:absolute;top:26px;font-size:34px;font-weight:800;padding:6px 20px;border-radius:14px;
