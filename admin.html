@@ -122,7 +122,10 @@ code{background:rgba(11,7,16,.7);padding:2px 7px;border-radius:6px;font-size:13p
         <div class="stat"><b id="stDone">0</b><span>סיימו את השאלון</span></div>
         <div class="stat"><b id="stPct">0%</b><span>השלמה</span></div>
       </div>
-      <div class="panel"><div id="pList"></div></div>
+      <div class="panel">
+        <input id="pSearch" placeholder="🔎 חיפוש לפי שם / מייל / טלפון" style="margin-bottom:12px">
+        <div id="pList"></div>
+      </div>
     </div>
 
     <!-- הגדרות -->
@@ -407,19 +410,28 @@ function renderQ(){
     </div>`).join('');
 }
 function renderP(){
-  const ps=DATA.participants, total=DATA.questions.filter(q=>q.is_active).length;
-  const done=ps.filter(p=>p.answer_count>=total).length;
-  $('#stTotal').textContent=ps.length; $('#stDone').textContent=done;
-  $('#stPct').textContent=(ps.length?Math.round(done/ps.length*100):0)+'%';
+  const all=DATA.participants, total=DATA.questions.filter(q=>q.is_active).length;
+  const done=all.filter(p=>p.answer_count>=total).length;
+  $('#stTotal').textContent=all.length; $('#stDone').textContent=done;
+  $('#stPct').textContent=(all.length?Math.round(done/all.length*100):0)+'%';
+  const term=($('#pSearch')&&$('#pSearch').value||'').trim().toLowerCase();
+  const ps=term ? all.filter(p=>((p.full_name||'')+' '+(p.email||'')+' '+(p.phone||'')).toLowerCase().includes(term)) : all;
   $('#pList').innerHTML=ps.map(p=>`
     <div class="p-item">
       ${p.avatar_url?`<img class="p-ava" src="${esc(p.avatar_url)}">`:'<div class="p-ava">🪩</div>'}
-      <div><div class="p-name">${esc(p.full_name)}</div>
+      <div style="min-width:0;flex:1"><div class="p-name">${esc(p.full_name)}</div>
       <div class="p-sub">${esc(p.email)} · ${esc(p.phone)}</div></div>
       <div class="p-done" style="color:${p.answer_count>=total?'#5dffa8':'var(--pink-l)'}">
         ${p.answer_count}/${total}</div>
-    </div>`).join('') || '<p style="color:var(--muted);font-size:14px">עדיין אין נרשמים. ברגע שמישהו ימלא, הוא יופיע כאן.</p>';
+      <button class="icon-btn" title="מחיקת נרשם" onclick="delParticipant('${p.id}','${esc((p.full_name||'').replace(/'/g,''))}')">🗑️</button>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:14px">'+(term?'אין תוצאה לחיפוש.':'עדיין אין נרשמים. ברגע שמישהו ימלא, הוא יופיע כאן.')+'</p>';
 }
+window.delParticipant=async(id,name)=>{
+  if(!confirm('למחוק את "'+name+'" מהמערכת? התשובות והשידוכים שלו יימחקו. אין דרך חזרה.'))return;
+  await api('/admin/participant',{action:'delete',id});
+  toast('הנרשם נמחק'); refresh();
+};
+$('#pSearch').addEventListener('input', ()=>{ if(DATA) renderP(); });
 
 /* ---- מודאל שאלה ---- */
 $('#addQBtn').onclick=()=>openModal();
