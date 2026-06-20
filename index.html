@@ -721,8 +721,13 @@ document.querySelectorAll('.logout-btn').forEach(b=>b.onclick=()=>{
 
 /* ---- אתחול ---- */
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function applyBrand(ev){
+  if(!ev) return;
+  if(ev.brand){ $('#s-landing .logo').textContent=ev.brand; document.title=ev.brand+' · '+(ev.tagline||''); }
+  if(ev.tagline!==undefined) $('#s-landing .tagline').textContent=ev.tagline;
+}
 (async function init(){
-  try{ const r=await api('/questions?e='+encodeURIComponent(SLUG)); questions=r.questions; }
+  try{ const r=await api('/questions?e='+encodeURIComponent(SLUG)); questions=r.questions; applyBrand(r.event); }
   catch(e){ toast('לא הצלחנו לטעון את השאלות, רעננו את העמוד'); }
   // מי שכבר נרשם מהמכשיר הזה, והערב בעיצומו: ישר פנימה
   const pid=store.get('pid'), tok=store.get('token');

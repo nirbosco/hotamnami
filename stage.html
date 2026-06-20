@@ -154,8 +154,8 @@ body{font-family:'Heebo',sans-serif;color:var(--white);overflow:hidden;
 
 <!-- הרשמה -->
 <section class="screen on" id="s-reg">
-  <h1 class="logo display">חוֹתָמְנָמִי 💘</h1>
-  <p class="tagline">חיבורים ממבט ראשון</p>
+  <h1 class="logo display" id="regLogo">חוֹתָמְנָמִי 💘</h1>
+  <p class="tagline" id="regTag">חיבורים ממבט ראשון</p>
   <div class="reg-grid">
     <div class="qr-box"><div id="qr"></div></div>
     <div class="reg-side">
@@ -206,7 +206,7 @@ body{font-family:'Heebo',sans-serif;color:var(--white);overflow:hidden;
 <section class="screen" id="s-stats">
   <button class="nav-arrow left" id="navPrev" aria-label="הקודם">‹</button>
   <button class="nav-arrow right" id="navNext" aria-label="הבא">›</button>
-  <h1 class="stats-head">📊 חוֹתָמְנָמִי במספרים</h1>
+  <h1 class="stats-head" id="statsHead">📊 חוֹתָמְנָמִי במספרים</h1>
   <p class="stats-sub">בלי שמות. רק האמת המספרית של הערב הזה.</p>
   <div class="slide-box" id="slideBox"></div>
   <div class="slide-dots" id="slideDots" style="position:static;margin-top:3vh"></div>
@@ -251,6 +251,12 @@ async function poll(){
   try{
     const r = await (await fetch(API+'/stage'+Q)).json();
     lastData=r;
+    if(r.event && r.event.brand){
+      $('#regLogo').textContent=r.event.brand+' 💘';
+      $('#regTag').textContent=r.event.tagline||'';
+      $('#statsHead').textContent='📊 '+r.event.brand+' במספרים';
+      document.title=r.event.brand;
+    }
     $('#regCount').textContent=r.registered;
     $('#lockedCount').textContent=r.registered;
     if(r.state.phase==='stats'){ shownRound=0; await enterStats(); return; }

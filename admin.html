@@ -169,6 +169,15 @@ code{background:rgba(11,7,16,.7);padding:2px 7px;border-radius:6px;font-size:13p
     </div>
 
     <div id="t-settings" class="hidden">
+      <div class="panel" style="border-color:rgba(255,77,157,.4)">
+        <b>🎨 שם המערכת (מיתוג)</b>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 10px">השם והסלוגן שהקהל רואה על מסך הפתיחה ובמסך האולם. שנו לשם של האירוע שלכם.</p>
+        <label style="display:block;font-size:13px;color:var(--gold-l);margin-bottom:4px">שם המערכת (לוגו)</label>
+        <input id="brandInput" placeholder="חוֹתָמְנָמִי" maxlength="40">
+        <label style="display:block;font-size:13px;color:var(--gold-l);margin:10px 0 4px">תת-כותרת</label>
+        <input id="taglineInput" placeholder="חיבורים ממבט ראשון" maxlength="80">
+        <div style="margin-top:12px"><button class="btn pink sm" id="brandBtn">שמירת מיתוג ✨</button></div>
+      </div>
       <div class="panel">
         <b>קישור למשתתפים</b>
         <p style="font-size:13px;color:var(--muted);margin:6px 0 10px">זה הקישור שמפיצים כ-QR בכניסה לאירוע:</p>
@@ -269,7 +278,9 @@ async function login(){
     $('#stageUrl').textContent=location.origin+BASE+(isHtml?'/stage.html':'/stage')+Q;
     $('#exportUrl').textContent=absApi('/export'+Q+'&pin='+PIN);
     if(DATA&&DATA.event){ document.title='ניהול · '+DATA.event.name;
-      $('#evName').innerHTML='🎪 <b style="color:var(--gold-l)">'+esc(DATA.event.name)+'</b> · פאנל ניהול האירוע'; }
+      $('#evName').innerHTML='🎪 <b style="color:var(--gold-l)">'+esc(DATA.event.name)+'</b> · פאנל ניהול האירוע';
+      if(DATA.event.brand!==undefined && !$('#brandInput').value) $('#brandInput').value=DATA.event.brand;
+      if(DATA.event.tagline!==undefined && !$('#taglineInput').value) $('#taglineInput').value=DATA.event.tagline; }
     setInterval(()=>refresh().catch(()=>{}),12000);
   }catch(e){ toast('קוד שגוי או שגיאת חיבור'); }
 }
@@ -484,9 +495,13 @@ $('#wipeBtn').onclick=async()=>{
   await api('/admin/wipe',{});
   toast('המערכת אופסה 🧨'); refresh();
 };
+$('#brandBtn').onclick=async()=>{
+  await api('/admin/state',{brand:$('#brandInput').value.trim(),tagline:$('#taglineInput').value.trim()});
+  toast('המיתוג נשמר ✨ הקהל יראה אותו מיד'); refresh();
+};
 $('#pinBtn').onclick=async()=>{
   const np=$('#newPin').value.trim(); if(np.length<4) return toast('קוד של 4 תווים לפחות');
-  await api('/admin/state',{new_pin:np}); PIN=np; sessionStorage.setItem('hotamnami_pin',np);
+  await api('/admin/state',{new_pin:np}); PIN=np; sessionStorage.setItem('hotamnami_pin_'+SLUG,np);
   $('#exportUrl').textContent=absApi('/export'+Q+'&pin='+np);
   toast('הקוד הוחלף'); $('#newPin').value='';
 };
