@@ -411,6 +411,7 @@ textarea.open-in:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,77
 const SUPA_API = 'https://ndrhiikczkbosentclnh.supabase.co/functions/v1/app/api';
 const API = new URLSearchParams(location.search).get('api')
   || (location.hostname.endsWith('.supabase.co') ? (location.pathname.replace(/\/+$/,'') + '/api') : SUPA_API);
+const SLUG = new URLSearchParams(location.search).get('e') || 'hotam-1';
 const $ = s => document.querySelector(s);
 const screens = ['s-landing','s-reg','s-again','s-quiz','s-done','s-who','s-wait','s-count','s-match'];
 function show(id){ screens.forEach(s=>$('#'+s).classList.toggle('on', s===id)); }
@@ -481,7 +482,7 @@ $('#regForm').addEventListener('submit', async e=>{
   if(!avatar) avatar={kind:'preset',emoji:'🪩',bg:'linear-gradient(135deg,#3a2350,#ff4d9d)'};
   const btn=$('#regBtn'); btn.disabled=true; btn.textContent='שומרים... ✨';
   try{
-    const r = await api('/register',{full_name:name,email,phone,avatar});
+    const r = await api('/register',{event:SLUG,full_name:name,email,phone,avatar});
     me=r.participant; store.set('token',me.token); store.set('pid',me.id);
     store.set('name',me.full_name); store.set('avatar',me.avatar_url||'');
     answers = r.answers || {};
@@ -616,7 +617,7 @@ $('#whoForm').addEventListener('submit', async e=>{
   if(v.length<6){ $('#eWho').textContent='הקלידו מייל מלא או מספר טלפון'; return; }
   $('#eWho').textContent='';
   try{
-    const r=await api('/me',{lookup:v});
+    const r=await api('/me',{event:SLUG,lookup:v});
     store.set('pid',r.participant.id); store.set('token',r.participant.token);
     me=r.participant; enterEvening(r);
   }catch(err){ $('#eWho').textContent=err.message; vibrate([30,40,30]); }
@@ -721,7 +722,7 @@ document.querySelectorAll('.logout-btn').forEach(b=>b.onclick=()=>{
 /* ---- אתחול ---- */
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 (async function init(){
-  try{ const r=await api('/questions'); questions=r.questions; }
+  try{ const r=await api('/questions?e='+encodeURIComponent(SLUG)); questions=r.questions; }
   catch(e){ toast('לא הצלחנו לטעון את השאלות, רעננו את העמוד'); }
   // מי שכבר נרשם מהמכשיר הזה, והערב בעיצומו: ישר פנימה
   const pid=store.get('pid'), tok=store.get('token');

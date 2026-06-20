@@ -219,7 +219,9 @@ body{font-family:'Heebo',sans-serif;color:var(--white);overflow:hidden;
 <script>
 const SUPA_API = 'https://ndrhiikczkbosentclnh.supabase.co/functions/v1/app/api';
 const API = new URLSearchParams(location.search).get('api') || SUPA_API;
-const APP_URL = 'https://nirbosco.github.io/hotamnami/';
+const SLUG = new URLSearchParams(location.search).get('e') || 'hotam-1';
+const Q = '?e=' + encodeURIComponent(SLUG);
+const APP_URL = 'https://nirbosco.github.io/hotamnami/' + (SLUG!=='hotam-1' ? Q : '');
 const $ = s => document.querySelector(s);
 const screens = ['s-reg','s-locked','s-count','s-reveal','s-stats'];
 function show(id){ screens.forEach(s=>$('#'+s).classList.toggle('on', s===id)); }
@@ -247,7 +249,7 @@ let shownRound=0, counting=false, lastData=null;
 async function poll(){
   if(counting) return;
   try{
-    const r = await (await fetch(API+'/stage')).json();
+    const r = await (await fetch(API+'/stage'+Q)).json();
     lastData=r;
     $('#regCount').textContent=r.registered;
     $('#lockedCount').textContent=r.registered;
@@ -271,7 +273,7 @@ let statsTimer=null, slideIdx=0, statsBuilt=false, autoOn=true;
 async function enterStats(){
   if(!$('#s-stats').classList.contains('on')) show('s-stats');
   if(!statsBuilt){
-    const s = await (await fetch(API+'/stats')).json();
+    const s = await (await fetch(API+'/stats'+Q)).json();
     buildSlides(s); statsBuilt=true;
     slideIdx=0; showSlide(0);
     autoOn=true; startAuto(); updateAutoUI();

@@ -84,7 +84,7 @@ code{background:rgba(11,7,16,.7);padding:2px 7px;border-radius:6px;font-size:13p
 <body>
 <div class="wrap">
   <h1 class="display">חוֹתָמְנָמִי 🪩 פאנל ניהול</h1>
-  <p class="sub">חיבורים ממבט ראשון · ניהול שאלות, נרשמים והגדרות הערב</p>
+  <p class="sub" id="evName">חיבורים ממבט ראשון · ניהול שאלות, נרשמים והגדרות הערב</p>
 
   <!-- כניסה -->
   <div class="panel" id="loginPanel">
@@ -240,14 +240,16 @@ const absApi = p => (API.startsWith('http') ? API : location.origin + API) + p;
 const BASE = location.pathname.replace(/\/admin(\.html)?\/?$/,'');
 const API = new URLSearchParams(location.search).get('api')
   || (location.hostname.endsWith('.supabase.co') ? (BASE + '/api') : SUPA_API);
+const SLUG = new URLSearchParams(location.search).get('e') || 'hotam-1';
+const Q = '?e=' + encodeURIComponent(SLUG);
 const $=s=>document.querySelector(s);
-let PIN=sessionStorage.getItem('hotamnami_pin')||'', DATA=null, editingId=null;
+let PIN=sessionStorage.getItem('hotamnami_pin_'+SLUG)||'', DATA=null, editingId=null;
 
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');
   clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600);}
 async function api(path,body){
   const res=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({...body,pin:PIN})});
+    body:JSON.stringify({...body,event:SLUG,pin:PIN})});
   const j=await res.json().catch(()=>({}));
   if(!res.ok) throw new Error(j.error||'שגיאה');
   return j;
@@ -260,11 +262,14 @@ $('#pin').addEventListener('keydown',e=>e.key==='Enter'&&login());
 async function login(){
   PIN=$('#pin').value.trim()||PIN;
   try{ await refresh();
-    sessionStorage.setItem('hotamnami_pin',PIN);
+    sessionStorage.setItem('hotamnami_pin_'+SLUG,PIN);
     $('#loginPanel').classList.add('hidden'); $('#app').classList.remove('hidden');
-    $('#appUrl').textContent=location.origin+BASE;
-    $('#stageUrl').textContent=location.origin+BASE+(location.pathname.includes('.html')?'/stage.html':'/stage');
-    $('#exportUrl').textContent=absApi('/export?pin='+PIN);
+    const isHtml=location.pathname.includes('.html');
+    $('#appUrl').textContent=location.origin+BASE+(isHtml?'/':'/')+Q;
+    $('#stageUrl').textContent=location.origin+BASE+(isHtml?'/stage.html':'/stage')+Q;
+    $('#exportUrl').textContent=absApi('/export'+Q+'&pin='+PIN);
+    if(DATA&&DATA.event){ document.title='ניהול · '+DATA.event.name;
+      $('#evName').innerHTML='🎪 <b style="color:var(--gold-l)">'+esc(DATA.event.name)+'</b> · פאנל ניהול האירוע'; }
     setInterval(()=>refresh().catch(()=>{}),12000);
   }catch(e){ toast('קוד שגוי או שגיאת חיבור'); }
 }
@@ -471,7 +476,7 @@ $('#mSave').onclick=async()=>{
 };
 
 /* ---- הגדרות ---- */
-$('#copyUrl').onclick=()=>{navigator.clipboard.writeText(location.origin+BASE);toast('הקישור הועתק');};
+$('#copyUrl').onclick=()=>{navigator.clipboard.writeText(location.origin+BASE+'/'+Q);toast('הקישור הועתק');};
 $('#wipeBtn').onclick=async()=>{
   if(!confirm('למחוק את כל הנרשמים, התשובות והשידוכים? אין דרך חזרה.'))return;
   const word=prompt('להשלמת המחיקה, הקלידו: איפוס');
@@ -482,7 +487,7 @@ $('#wipeBtn').onclick=async()=>{
 $('#pinBtn').onclick=async()=>{
   const np=$('#newPin').value.trim(); if(np.length<4) return toast('קוד של 4 תווים לפחות');
   await api('/admin/state',{new_pin:np}); PIN=np; sessionStorage.setItem('hotamnami_pin',np);
-  $('#exportUrl').textContent=absApi('/export?pin='+np);
+  $('#exportUrl').textContent=absApi('/export'+Q+'&pin='+np);
   toast('הקוד הוחלף'); $('#newPin').value='';
 };
 </script>
