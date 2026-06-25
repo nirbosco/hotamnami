@@ -252,7 +252,12 @@ const API = new URLSearchParams(location.search).get('api')
 const SLUG = new URLSearchParams(location.search).get('e') || 'hotam-1';
 const Q = '?e=' + encodeURIComponent(SLUG);
 const $=s=>document.querySelector(s);
-let PIN=sessionStorage.getItem('hotamnami_pin_'+SLUG)||'', DATA=null, editingId=null;
+let PIN=localStorage.getItem('hotamnami_pin_'+SLUG)||sessionStorage.getItem('hotamnami_pin_'+SLUG)||'', DATA=null, editingId=null;
+function rememberEvent(slug,name){ try{
+  const list=JSON.parse(localStorage.getItem('hotamnami_my_events')||'[]').filter(e=>e.slug!==slug);
+  list.unshift({slug,name,ts:Date.now()});
+  localStorage.setItem('hotamnami_my_events',JSON.stringify(list.slice(0,30)));
+}catch(e){} }
 
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');
   clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600);}
@@ -271,7 +276,8 @@ $('#pin').addEventListener('keydown',e=>e.key==='Enter'&&login());
 async function login(){
   PIN=$('#pin').value.trim()||PIN;
   try{ await refresh();
-    sessionStorage.setItem('hotamnami_pin_'+SLUG,PIN);
+    localStorage.setItem('hotamnami_pin_'+SLUG,PIN);
+    if(DATA&&DATA.event) rememberEvent(SLUG, DATA.event.name);
     $('#loginPanel').classList.add('hidden'); $('#app').classList.remove('hidden');
     const isHtml=location.pathname.includes('.html');
     $('#appUrl').textContent=location.origin+BASE+(isHtml?'/':'/')+Q;
@@ -501,7 +507,7 @@ $('#brandBtn').onclick=async()=>{
 };
 $('#pinBtn').onclick=async()=>{
   const np=$('#newPin').value.trim(); if(np.length<4) return toast('קוד של 4 תווים לפחות');
-  await api('/admin/state',{new_pin:np}); PIN=np; sessionStorage.setItem('hotamnami_pin_'+SLUG,np);
+  await api('/admin/state',{new_pin:np}); PIN=np; localStorage.setItem('hotamnami_pin_'+SLUG,np);
   $('#exportUrl').textContent=absApi('/export'+Q+'&pin='+np);
   toast('הקוד הוחלף'); $('#newPin').value='';
 };

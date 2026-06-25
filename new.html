@@ -53,6 +53,12 @@ input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,77,157,.18)}
   <h1 class="logo display">חוֹתָמְנָמִי</h1>
   <p class="tag">פתיחת אירוע סולמייט חדש</p>
 
+  <div class="card" id="myEvents" style="display:none;margin-bottom:16px;border-color:rgba(245,214,123,.5)">
+    <b style="color:var(--gold-l);font-size:16px">🎪 האירועים שלי</b>
+    <p style="font-size:13px;color:var(--muted);margin:4px 0 12px">לחיצה תחזיר אותך לפאנל הניהול של האירוע, עם כל הנתונים.</p>
+    <div id="myEventsList"></div>
+  </div>
+
   <div class="card" id="formCard">
     <p style="font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:6px">צרו אירוע חדש בלחיצה. תקבלו קישורים מוכנים: לקהל, למסך האולם ולפאנל הניהול.</p>
     <label for="name">שם האירוע</label>
@@ -97,8 +103,29 @@ const SUPA_API = 'https://ndrhiikczkbosentclnh.supabase.co/functions/v1/app/api'
 const API = new URLSearchParams(location.search).get('api') || SUPA_API;
 const $ = s => document.querySelector(s);
 // בסיס הקישורים: התיקייה הנוכחית (תומך גם ב-GitHub Pages וגם בכל אירוח)
-const PAGES = location.href.replace(/\/[^\/]*$/,'');
+const PAGES = location.href.replace(/\/[^\/?#]*([?#].*)?$/,'');
 const ERR = { bad_code:'קוד היצירה שגוי. בקשו אותו מהצוות של חותם.', short_pin:'קוד מנחים חייב לפחות 4 תווים.', create_failed:'שגיאה ביצירת האירוע, נסו שוב.' };
+
+// זיכרון מקומי של האירועים שיצרת במכשיר הזה — כדי שתמיד תוכל לחזור אליהם
+function myEvents(){ try{ return JSON.parse(localStorage.getItem('hotamnami_my_events')||'[]'); }catch(e){ return []; } }
+function rememberEvent(slug, name, pin){
+  const list=myEvents().filter(e=>e.slug!==slug);
+  list.unshift({slug, name, ts:Date.now()});
+  localStorage.setItem('hotamnami_my_events', JSON.stringify(list.slice(0,30)));
+  if(pin) localStorage.setItem('hotamnami_pin_'+slug, pin); // כניסה אוטומטית לפאנל
+}
+function renderMyEvents(){
+  const list=myEvents(); if(!list.length) return;
+  $('#myEvents').style.display='block';
+  $('#myEventsList').innerHTML=list.map(e=>`
+    <div class="link-box" style="padding:11px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">${(e.name||'אירוע').replace(/[<>&]/g,'')}</div></div>
+      <a class="copy" style="text-decoration:none;color:#2a1606;background:linear-gradient(95deg,var(--gold-l),var(--gold));border:none"
+         href="${PAGES}/admin.html?e=${encodeURIComponent(e.slug)}">⚙️ ניהול</a>
+      <a class="copy" style="text-decoration:none" href="${PAGES}/?e=${encodeURIComponent(e.slug)}" target="_blank">📱 קהל</a>
+    </div>`).join('');
+}
+renderMyEvents();
 
 $('#createBtn').onclick = async ()=>{
   const name=$('#name').value.trim(), pin=$('#pin').value.trim(), code=$('#code').value.trim();
@@ -112,6 +139,7 @@ $('#createBtn').onclick = async ()=>{
       body:JSON.stringify({name,pin,code})});
     const j=await res.json();
     if(!res.ok) throw new Error(ERR[j.error]||j.error||'שגיאה');
+    rememberEvent(j.slug, j.name, pin);
     showResult(j.slug, j.name);
   }catch(e){ $('#err').textContent=e.message; }
   btn.disabled=false; btn.textContent='יצירת אירוע ✨';
